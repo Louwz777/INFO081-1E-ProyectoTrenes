@@ -1,5 +1,5 @@
 # INFO081-1E-ProyectoTrenes
 ### Estudiantes participantes
-Danilo Arce Castro
-Sebastian Burgos Maldonado(Louwz777) 
+Danilo Arce Castro (Nylooooon).  
+Sebastian Burgos Maldonado(Louwz777). 
 
