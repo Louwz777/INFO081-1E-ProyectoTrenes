@@ -46,19 +46,19 @@ Lista de entradas ejecutables principales:
 - `chuchu.Py` (archivo principal) — arranca la aplicación llamando a `interfaz.ventanas.window.ventana_principal()`.
 - `interfaz/ventanas/window.py` — contiene la interfaz principal y puede ejecutarse directamente como módulo.
 
-Recomendación: ejecutar desde la raíz del proyecto. Ejemplos de comandos (PowerShell / pwsh):
+Recomendación: ejecutar desde la raíz del proyecto. 
 
-powershell
-## Situarse en la raíz del proyecto
-cd "c:\ruta_de_la_carpeta\INFO081-1E-ProyectoTrenes"
+## Ejecucion del programa (en *powershell*)  
+##### Situarse en la raíz del proyecto:  
+`> cd "c:\ruta_de_la_carpeta\INFO081-1E-ProyectoTrenes"`
 
-# Opción 1: ejecutar el lanzador principal
-python chuchu.Py
+##### Opción 1: ejecutar el lanzador principal
+`> python chuchu.Py`
 
-# Opción 2: ejecutar la ventana principal como módulo (recomendado para respetar imports relativos)
-python -m interfaz.ventanas.window
+##### Opción 2: ejecutar la ventana principal como módulo (recomendado para respetar imports relativos)
+`> python -m interfaz.ventanas.window`
 
-## Ideas para proxima entrega
+### Ideas para proxima entrega:
 
 - `logic/sistema_guardado/sistema_guardado.py` tiene stubs y requiere implementación para guardar/cargar JSON y Parquet.
 - `modelos/clases.py` incluye `convertir_dicc()` en las entidades, lo que facilita serialización.
