@@ -1,18 +1,44 @@
 """
 Módulo para el manejo del estado de la simulación.
 """
+from datetime import datetime, timedelta
 
 class EstadoSimulacion:
     """
     Clase que representa el estado actual de la simulación.
     """
-    def __init__(self, hora_actual=0):
+    def __init__(self, fecha_inicio_str="2015-01-01 07:00:00"):
         """
         Inicializa el estado de la simulación con la hora actual.
         Args:
-            hora_actual (int): La hora actual de la simulación.
+            fecha_inicio_str (str): Fecha y hora inicial en formato "YYYY-MM-DD HH:MM:SS".
         """
-        self.hora_actual = hora_actual
+        try:
+            self.tiempo_actual = datetime.strptime(fecha_inicio_str, "%Y-%m-%d %H:%M:%S")
+        except ValueError:
+            self.tiempo_actual = datetime(2015, 1, 1, 7, 0, 0)
+            
+    def actualizar_display(self):
+        """
+        Devuelve la hora y la fecha formateadas.
+        Returns:
+            (str, str): Hora en formato "HH:MM:SS", Fecha en formato "DD/MM/YYYY"
+        """
+        hora = self.tiempo_actual.strftime("%H:%M:%S")
+        fecha = self.tiempo_actual.strftime("%d/%m/%Y")
+        return hora, fecha
+    def avanzar_tiempo(self, segundos=1):
+        """
+        Avanza la hora simulado por cierta cantidad de segundos.
+        Args:
+            segundos (int): cantidad de segundos a avanzar.
+        Returns:
+            datetime: Nuevo tiempo simulado.
+        """
+        self.tiempo_actual += timedelta(seconds=segundos)
+        return self.tiempo_actual
 
     def __str__(self):
-        return f"EstadoSimulacion(hora_actual={self.hora_actual})"
+        hora, fecha = self.actualizar_display()
+        return f"EstadoSimulacion(hora_actual={hora}, fecha={fecha})"
+        
