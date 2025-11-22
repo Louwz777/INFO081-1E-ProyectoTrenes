@@ -1,6 +1,6 @@
-# INFO081-1E — Proyecto: Simulador de Trenes
 
-##### Estado: Entrega N°1
+# INFO081-1E — **RAMA TEST**
+##### Estado: En revision
 
 ## Resumen
 
