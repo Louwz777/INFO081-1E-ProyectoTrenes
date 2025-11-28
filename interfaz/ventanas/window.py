@@ -13,7 +13,7 @@ import settings as config
 
 def iniciar_simulacion(ventana_actual):
     """Abre una nueva ventana de simulación y oculta la principal."""
-    ventana_actual.withdraw()  # Oculta la ventana principal (puedes usar destroy() si prefieres cerrarla)
+    ventana_actual.withdraw()  
 
     nueva = tk.Toplevel()
     nueva.title("Simulación en curso")
@@ -23,7 +23,7 @@ def iniciar_simulacion(ventana_actual):
     # Mensaje dentro de la nueva ventana
     etiqueta = tk.Label(
         nueva,
-        text="¡Bienvenido a la simulación!",
+        text="SIMULACION",
         font=("Arial", 20, "bold"),
         bg="#e8e8e8",
         fg="#333"
