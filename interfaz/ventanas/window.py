@@ -2,13 +2,13 @@ import sys
 import os
 import tkinter as tk    
 from PIL import ImageTk, Image
+import settings as config
+
 
 ###Señala carpeta interfaz
 ruta_raiz = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ruta_raiz)
 ruta_imagen = os.path.join(ruta_raiz, "images", "bg.png")
-import settings as config
-
 
 
 def iniciar_simulacion(ventana_actual):
@@ -77,7 +77,7 @@ def ventana_principal():
     boton = tk.Button(
         ventana,
         text="INICIAR SIMULACIÓN",
-        command=lambda: iniciar_simulacion(ventana),  # 👈 aquí el cambio
+        command=lambda: iniciar_simulacion(ventana), 
         bg=config.COLOR_BLANCO,
         fg=config.COLOR_GRIS,
         font=("Arial", 10),
