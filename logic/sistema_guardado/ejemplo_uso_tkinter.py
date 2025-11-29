@@ -5,7 +5,8 @@ Este archivo demuestra cómo integrar el SistemaGuardado en una interfaz gráfic
 
 import tkinter as tk
 from tkinter import messagebox, scrolledtext
-from logic.sistema_guardado.sistema_guardado import SistemaGuardado
+from logic.sistema_guardado.sistema_guardado import SistemaGuardado 
+# ^ para que funcione el sistema de guardado se debe agregar la carpeta logic al path del proyecto
 
 
 class EjemploGUI:
