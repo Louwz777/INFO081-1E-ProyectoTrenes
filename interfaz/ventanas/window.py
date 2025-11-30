@@ -2,7 +2,7 @@ import sys
 import os
 import tkinter as tk    
 from PIL import ImageTk, Image
-import settings as config
+from .. import settings as config
 
 
 ###Señala carpeta interfaz
