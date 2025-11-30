@@ -1,6 +1,6 @@
 
-# INFO081-1E — **RAMA TEST**
-##### Estado: En revision
+# INFO081-1E — PROYECTO DE PROGRAMACION
+##### Estado: Entregable N°1
 
 ## Resumen
 
