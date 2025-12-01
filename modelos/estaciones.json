@@ -1,0 +1,17 @@
+{
+    "Limbus": {
+        "nombre": "Limbus",
+        "poblacion": 15,
+        "lineas": [
+            "L1"
+        ]
+    },
+    "Pibble Palace": {
+        "nombre": "Pibble Palace",
+        "poblacion": 100,
+        "lineas": [
+            "L3",
+            "L6"
+        ]
+    }
+}
