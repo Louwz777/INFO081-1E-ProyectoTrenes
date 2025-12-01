@@ -1,0 +1,14 @@
+{
+    "lento": {
+        "nombre": "lento",
+        "velocidad": 125,
+        "ppv": 100,
+        "ccv": 50
+    },
+    "fast": {
+        "nombre": "fast",
+        "velocidad": 1225,
+        "ppv": 100,
+        "ccv": 50
+    }
+}
