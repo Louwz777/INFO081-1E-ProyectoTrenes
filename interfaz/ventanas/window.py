@@ -69,10 +69,28 @@ def ventana_principal():
     relw = 0.22
     relh = 0.14
 
+    label_semilla = tk.Label(
+    ventana,
+    text="Semilla (0-10000):",
+    bg=config.COLOR_BLANCO,
+    fg=config.COLOR_GRIS,
+    font=btn_font
+)
+    label_semilla.place(relx=0.2, rely=0.65, anchor="center")
+
+    entrada_semilla = tk.Entry(
+        ventana,
+        font=btn_font,
+        bg="white",
+        fg="black"
+    )
+    entrada_semilla.place(relx=0.2, rely=0.75, anchor="center", relwidth=0.11, relheight=0.035)
+
+
     boton = tk.Button(
         ventana,
         text="INICIAR SIMULACIÓN",
-        command=lambda: iniciar_simulacion(ventana), 
+        command=lambda: iniciar_simulacion(ventana, entrada_semilla), 
         bg=config.COLOR_BLANCO,
         fg=config.COLOR_GRIS,
         font=btn_font,

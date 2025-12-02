@@ -7,7 +7,7 @@ from logic.estado_simulacion import EstadoSimulacion
 import random
 
 
-def iniciar_simulacion(ventana_actual):
+def iniciar_simulacion(ventana_actual,semilla):
     """Abre una nueva ventana de simulación y oculta la principal."""
     ventana_actual.withdraw()  
 
@@ -16,7 +16,10 @@ def iniciar_simulacion(ventana_actual):
     ventana_simulacion.geometry("800x600")
     ventana_simulacion.configure(bg="#e8e8e8")
     
-    estado=EstadoSimulacion(semilla=1)
+    # Inicializa el estado de la simulación
+    #si semilla no es un numero, se genera una aleatoria
+    semilla =int(semilla) if semilla.isdigit() else random.randint(0,10000)
+    estado=EstadoSimulacion(semilla=int(semilla))
     
  # Muestra de nuevo la ventana principal
     def volver_menu():
