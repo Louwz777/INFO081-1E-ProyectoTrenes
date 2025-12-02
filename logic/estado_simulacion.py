@@ -27,15 +27,17 @@ class EstadoSimulacion:
         
         random.seed(semilla)
         
-        #parametros adicionales 
+        #parametros guardado
         
         self.historial_eventos = []
         self.historial_elecciones = []
         
+        #parametros objetos
         self.trenes= cargar_objetos("modelos/trenes.json", tren)
         self.estaciones= cargar_objetos("modelos/estaciones.json", estacion)
         
-        
+        #parametros extra
+
 
     def actualizar_display(self):
         """
