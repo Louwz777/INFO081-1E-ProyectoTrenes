@@ -2,15 +2,16 @@
 Módulo para el manejo del estado de la simulación.
 """
 from datetime import datetime, timedelta
+from modelos.clases import *
+from logic.sistema_eventos.eventos import crear_evento_niebla
 import random;
 
+
 class EstadoSimulacion:
-    """
-    Clase que representa el estado actual de la simulación.
-    """
+
     def __init__(self, fecha_inicio_str="2015-01-01 07:00:00",semilla=random.randint(0,10000)):
         """
-        Inicializa el estado de la simulación con la hora actual.
+        Inicializa el estado de la simulación con la hora actual y la semilla para eventos aleatorios.
         
         Args:
             fecha_inicio_str (str): Fecha y hora inicial en formato "YYYY-MM-DD HH:MM:SS".
@@ -24,7 +25,17 @@ class EstadoSimulacion:
         except ValueError:
             self.tiempo_actual = datetime(2015, 1, 1, 7, 0, 0)
         random.seed(semilla)
-            
+        
+        #parametros adicionales 
+        
+        self.historial_eventos = []
+        self.historial_elecciones = []
+        
+        self.trenes= cargar_objetos("modelos/trenes.json", tren)
+        self.estaciones= cargar_objetos("modelos/estaciones.json", estacion)
+        
+        
+
     def actualizar_display(self):
         """
         Devuelve la hora y la fecha formateadas.
@@ -52,11 +63,7 @@ class EstadoSimulacion:
             str: Descripción del evento generado.
         """
         eventos = [
-            "Retraso en la línea A",
-            "Accidente en la estación Central",
-            "Aumento de pasajeros en la línea B",
-            "Mantenimiento programado en la línea C",
-            "Condiciones climáticas adversas"
+            crear_evento_niebla(self)
         ]
         evento = random.choice(eventos)
         return evento

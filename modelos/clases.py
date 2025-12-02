@@ -5,6 +5,9 @@ import json;
 import os;
 import pandas as pd;
 
+##crea una variable con la ruta de la carpeta datos
+
+
 class tren:
     ## ppv= pasajeros por vagon
     ## ccv= cantidad de vagones
@@ -40,6 +43,7 @@ class pasajero:
             "destino": self.destino,
             "retorno": self.retorno
             }
+        
 class estacion:
 
     def __init__(self,nombre:str,poblacion:int,lineas:list):
