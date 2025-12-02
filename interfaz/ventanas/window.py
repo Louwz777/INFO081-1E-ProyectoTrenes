@@ -105,20 +105,32 @@ def ventana_principal():
         font=btn_font,
         cursor="hand2"
     )
-    #Colocar en el centro abajo
-    boton.place(relx=0.3, rely=0.88, anchor="center", relwidth=relw, relheight=relh)
+    #Colocar en la izquierda abajo
+    boton.place(relx=0.2, rely=0.88, anchor="center", relwidth=relw, relheight=relh)
 
-    #Botón de Página de Edición
+    # Botón para edición de trenes (nuevo)
+    boton_trenes = tk.Button(
+        ventana,
+        text="EDICIÓN TRENES",
+        command=lambda: pagina_edicion_trenes(ventana),
+        bg=config.COLOR_AZUL,
+        fg=config.COLOR_BLANCO,
+        font=btn_font,
+        cursor="hand2"
+    )
+    boton_trenes.place(relx=0.5, rely=0.88, anchor="center", relwidth=relw, relheight=relh)
+
+    #Botón de Página de Edición (estaciones)
     boton_pagina = tk.Button(
         ventana,
-        text="PÁGINA EDICIÓN",
+        text="EDICIÓN ESTACIONES",
         command=lambda: pagina_edicion(ventana),
         bg=config.COLOR_AZUL,
         fg=config.COLOR_BLANCO,
         font=btn_font,
         cursor="hand2"
     )
-    boton_pagina.place(relx=0.7, rely=0.88, anchor="center", relwidth=relw, relheight=relh)
+    boton_pagina.place(relx=0.8, rely=0.88, anchor="center", relwidth=relw, relheight=relh)
 
     #Escalar fuente al redimensionar ventana
     def on_resize(event):
@@ -128,7 +140,6 @@ def ventana_principal():
 
     ventana.bind('<Configure>', on_resize)
     ventana.mainloop()
-
 
 def pagina_edicion(ventana_actual):
     #Muestra la página de edición con botones para editar y ver estaciones
@@ -175,6 +186,19 @@ def pagina_edicion(ventana_actual):
         pady=8
     )
     btn_ver.pack(side=tk.LEFT, padx=20)
+
+    btn_crear = tk.Button(
+        frame,
+        text="Crear Estación",
+        command=lambda: crear_estacion(pagina),
+        bg=config.COLOR_VERDE,
+        fg=config.COLOR_BLANCO,
+        font=("Arial", 12),
+        cursor="hand2",
+        padx=12,
+        pady=8
+    )
+    btn_crear.pack(side=tk.LEFT, padx=20)
 
     # --- Selección y borrado de estaciones directamente en la Página de Edición ---
     control_frame = tk.Frame(pagina, bg=config.COLOR_GRIS)
@@ -241,6 +265,9 @@ def pagina_edicion(ventana_actual):
     #Inicializar lista de nombres
     refrescar_nombres()
 
+    # Cuando la ventana reciba foco (por ejemplo tras cerrar crear_estacion), refrescar la lista
+    pagina.bind('<FocusIn>', lambda e: refrescar_nombres())
+
     def volver():
         pagina.destroy()
         ventana_actual.deiconify()
@@ -257,7 +284,6 @@ def pagina_edicion(ventana_actual):
         pady=6
     )
     btn_volver.pack(pady=12)
-
 
 def abrir_editor_estacion(parent):
    #Abre un editor que permite seleccionar, editar y borrar estaciones desde el JSON
@@ -409,6 +435,386 @@ def abrir_editor_estacion(parent):
 
     btn_close = tk.Button(right, text="Cerrar", command=cerrar, bg=config.COLOR_AZUL, fg=config.COLOR_BLANCO, cursor="hand2")
     btn_close.grid(row=5, column=0, columnspan=2, pady=10)
+
+
+def pagina_edicion_trenes(ventana_actual):
+    # Muestra la página de edición para trenes
+    ventana_actual.withdraw()
+    pagina = tk.Toplevel()
+    pagina.title("Página de Edición - Trenes")
+    pagina.geometry("640x360")
+    pagina.configure(bg=config.COLOR_GRIS)
+
+    titulo = tk.Label(
+        pagina,
+        text="Edición de Trenes",
+        font=("Arial", 18, "bold"),
+        bg=config.COLOR_GRIS,
+        fg=config.COLOR_BLANCO
+    )
+    titulo.pack(pady=12)
+
+    frame = tk.Frame(pagina, bg=config.COLOR_GRIS)
+    frame.pack(expand=True)
+
+    btn_editar = tk.Button(
+        frame,
+        text="Editar Tren",
+        command=lambda: abrir_editor_tren(pagina),
+        bg=config.COLOR_AZUL,
+        fg=config.COLOR_BLANCO,
+        font=("Arial", 12),
+        cursor="hand2",
+        padx=12,
+        pady=8
+    )
+    btn_editar.pack(side=tk.LEFT, padx=20)
+
+    btn_ver = tk.Button(
+        frame,
+        text="Ver Trenes",
+        command=lambda: ver_trenes(pagina),
+        bg=config.COLOR_VERDE,
+        fg=config.COLOR_BLANCO,
+        font=("Arial", 12),
+        cursor="hand2",
+        padx=12,
+        pady=8
+    )
+    btn_ver.pack(side=tk.LEFT, padx=20)
+
+    btn_crear = tk.Button(
+        frame,
+        text="Crear Tren",
+        command=lambda: crear_tren(pagina),
+        bg=config.COLOR_VERDE,
+        fg=config.COLOR_BLANCO,
+        font=("Arial", 12),
+        cursor="hand2",
+        padx=12,
+        pady=8
+    )
+    btn_crear.pack(side=tk.LEFT, padx=20)
+
+    def volver():
+        pagina.destroy()
+        ventana_actual.deiconify()
+
+    btn_volver = tk.Button(
+        pagina,
+        text="Volver",
+        command=volver,
+        bg=config.COLOR_AZUL,
+        fg=config.COLOR_BLANCO,
+        font=("Arial", 12),
+        cursor="hand2",
+        padx=8,
+        pady=6
+    )
+    btn_volver.pack(pady=12)
+
+
+def cargar_trenes_desde_disco():
+    archivo_trenes = os.path.join(ruta_raiz, "modelos", "trenes.json")
+    if not os.path.exists(archivo_trenes):
+        return []
+    try:
+        with open(archivo_trenes, 'r', encoding='utf-8') as f:
+            contenido = json.load(f)
+    except Exception as e:
+        print(f"Error leyendo archivo de trenes: {e}")
+        return []
+    trenes = []
+    for nombre, datos in contenido.items():
+        try:
+            velocidad = int(datos.get('velocidad', 0))
+            ppv = int(datos.get('ppv', 0))
+            ccv = int(datos.get('ccv', 0))
+            trenes.append((nombre, velocidad, ppv, ccv))
+        except Exception as e:
+            print(f"Omitiendo entrada inválida {nombre}: {e}")
+    return trenes
+
+
+def ver_trenes(ventana_actual):
+    ventana_actual.withdraw()
+    ventana_lista = tk.Toplevel()
+    ventana_lista.title("Lista de Trenes")
+    ventana_lista.geometry("700x600")
+    ventana_lista.configure(bg=config.COLOR_GRIS)
+
+    titulo = tk.Label(
+        ventana_lista,
+        text="TRENES REGISTRADOS",
+        font=("Arial", 24, "bold"),
+        bg=config.COLOR_GRIS,
+        fg=config.COLOR_BLANCO
+    )
+    titulo.pack(pady=30)
+
+    frame_scroll = tk.Frame(ventana_lista, bg=config.COLOR_GRIS)
+    frame_scroll.pack(fill=tk.BOTH, expand=True, padx=20, pady=20)
+
+    texto = tk.Text(
+        frame_scroll,
+        font=("Courier", 11),
+        bg=config.COLOR_NEGRO,
+        fg=config.COLOR_BLANCO,
+        wrap=tk.WORD
+    )
+    texto.pack(fill=tk.BOTH, expand=True)
+
+    trenes = cargar_trenes_desde_disco()
+    if trenes:
+        for i, (nombre, velocidad, ppv, ccv) in enumerate(trenes, 1):
+            texto.insert(tk.END, f"{i}. {nombre}\n")
+            texto.insert(tk.END, f"   Velocidad: {velocidad}\n")
+            texto.insert(tk.END, f"   Pasajeros/vagón: {ppv}\n")
+            texto.insert(tk.END, f"   Cantidad vagones: {ccv}\n\n")
+    else:
+        texto.insert(tk.END, "No hay trenes registrados aún.\n")
+
+    texto.config(state=tk.DISABLED)
+
+    def volver():
+        ventana_lista.destroy()
+        ventana_actual.deiconify()
+
+    boton_volver = tk.Button(
+        ventana_lista,
+        text="Volver",
+        command=volver,
+        bg=config.COLOR_AZUL,
+        fg=config.COLOR_BLANCO,
+        cursor="hand2"
+    )
+    boton_volver.pack(pady=20)
+
+
+def abrir_editor_tren(parent):
+    archivo_trenes = os.path.join(ruta_raiz, "modelos", "trenes.json")
+
+    def leer_dict():
+        if not os.path.exists(archivo_trenes):
+            return {}
+        try:
+            with open(archivo_trenes, 'r', encoding='utf-8') as f:
+                return json.load(f)
+        except Exception as e:
+            print(f"Error leyendo trenes: {e}")
+            return {}
+
+    data = leer_dict()
+
+    editor = tk.Toplevel()
+    editor.title("Editar Tren")
+    editor.geometry("800x420")
+    editor.configure(bg=config.COLOR_GRIS)
+
+    left = tk.Frame(editor, bg=config.COLOR_GRIS)
+    left.pack(side=tk.LEFT, fill=tk.Y, padx=12, pady=12)
+
+    lb_label = tk.Label(left, text="Trenes:", bg=config.COLOR_GRIS, fg=config.COLOR_BLANCO)
+    lb_label.pack(anchor="w")
+
+    listbox = tk.Listbox(left, width=30, height=20)
+    listbox.pack(side=tk.LEFT, fill=tk.Y)
+
+    scrollbar = tk.Scrollbar(left, orient=tk.VERTICAL, command=listbox.yview)
+    scrollbar.pack(side=tk.LEFT, fill=tk.Y)
+    listbox.config(yscrollcommand=scrollbar.set)
+
+    nombres = sorted(data.keys())
+    for n in nombres:
+        listbox.insert(tk.END, n)
+
+    right = tk.Frame(editor, bg=config.COLOR_GRIS)
+    right.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=12, pady=12)
+
+    tk.Label(right, text="Nombre:", bg=config.COLOR_GRIS, fg=config.COLOR_BLANCO).grid(row=0, column=0, sticky="w")
+    e_nombre = tk.Entry(right, width=40)
+    e_nombre.grid(row=0, column=1, pady=6, sticky="w")
+
+    tk.Label(right, text="Velocidad:", bg=config.COLOR_GRIS, fg=config.COLOR_BLANCO).grid(row=1, column=0, sticky="w")
+    e_vel = tk.Entry(right, width=20)
+    e_vel.grid(row=1, column=1, pady=6, sticky="w")
+
+    tk.Label(right, text="Pasajeros por vagón:", bg=config.COLOR_GRIS, fg=config.COLOR_BLANCO).grid(row=2, column=0, sticky="w")
+    e_ppv = tk.Entry(right, width=20)
+    e_ppv.grid(row=2, column=1, pady=6, sticky="w")
+
+    tk.Label(right, text="Cantidad vagones:", bg=config.COLOR_GRIS, fg=config.COLOR_BLANCO).grid(row=3, column=0, sticky="w")
+    e_ccv = tk.Entry(right, width=20)
+    e_ccv.grid(row=3, column=1, pady=6, sticky="w")
+
+    msg = tk.Label(right, text="", bg=config.COLOR_GRIS, fg=config.COLOR_VERDE)
+    msg.grid(row=4, column=0, columnspan=2, pady=6, sticky="w")
+
+    selected = {'old': None}
+
+    def on_select(evt):
+        sel = listbox.curselection()
+        if not sel:
+            return
+        name = listbox.get(sel[0])
+        selected['old'] = name
+        entry = data.get(name, {})
+        e_nombre.delete(0, tk.END)
+        e_nombre.insert(0, entry.get('nombre', name))
+        e_vel.delete(0, tk.END)
+        e_vel.insert(0, str(entry.get('velocidad', '')))
+        e_ppv.delete(0, tk.END)
+        e_ppv.insert(0, str(entry.get('ppv', '')))
+        e_ccv.delete(0, tk.END)
+        e_ccv.insert(0, str(entry.get('ccv', '')))
+
+    listbox.bind('<<ListboxSelect>>', on_select)
+
+    def guardar():
+        old = selected.get('old')
+        if not old:
+            msg.config(text="Seleccione un tren primero", fg=config.COLOR_ROJO)
+            return
+        new_name = e_nombre.get().strip()
+        vel_str = e_vel.get().strip()
+        ppv_str = e_ppv.get().strip()
+        ccv_str = e_ccv.get().strip()
+        if not new_name:
+            msg.config(text="El nombre no puede estar vacío", fg=config.COLOR_ROJO)
+            return
+        if not (vel_str.isdigit() and ppv_str.isdigit() and ccv_str.isdigit()):
+            msg.config(text="Velocidad/ppv/ccv deben ser números", fg=config.COLOR_ROJO)
+            return
+        vel = int(vel_str)
+        ppv = int(ppv_str)
+        ccv = int(ccv_str)
+
+        data_local = leer_dict()
+        if old != new_name and old in data_local:
+            data_local.pop(old, None)
+        data_local[new_name] = {"nombre": new_name, "velocidad": vel, "ppv": ppv, "ccv": ccv}
+        try:
+            with open(archivo_trenes, 'w', encoding='utf-8') as f:
+                json.dump(data_local, f, indent=4, ensure_ascii=False)
+            msg.config(text="Guardado correctamente", fg=config.COLOR_VERDE)
+            listbox.delete(0, tk.END)
+            for n in sorted(data_local.keys()):
+                listbox.insert(tk.END, n)
+            selected['old'] = new_name
+        except Exception as e:
+            msg.config(text=f"Error guardando: {e}", fg=config.COLOR_ROJO)
+
+    def borrar():
+        old = selected.get('old')
+        if not old:
+            msg.config(text="Seleccione un tren primero", fg=config.COLOR_ROJO)
+            return
+        data_local = leer_dict()
+        if old in data_local:
+            data_local.pop(old, None)
+            try:
+                with open(archivo_trenes, 'w', encoding='utf-8') as f:
+                    json.dump(data_local, f, indent=4, ensure_ascii=False)
+                msg.config(text="Tren eliminado", fg=config.COLOR_VERDE)
+                listbox.delete(0, tk.END)
+                for n in sorted(data_local.keys()):
+                    listbox.insert(tk.END, n)
+                e_nombre.delete(0, tk.END)
+                e_vel.delete(0, tk.END)
+                e_ppv.delete(0, tk.END)
+                e_ccv.delete(0, tk.END)
+                selected['old'] = None
+            except Exception as e:
+                msg.config(text=f"Error borrando: {e}", fg=config.COLOR_ROJO)
+        else:
+            msg.config(text="Tren no encontrado", fg=config.COLOR_ROJO)
+
+    btn_frame = tk.Frame(right, bg=config.COLOR_GRIS)
+    btn_frame.grid(row=5, column=0, columnspan=2, pady=12, sticky="w")
+
+    btn_save = tk.Button(btn_frame, text="Guardar cambios", command=guardar, bg=config.COLOR_VERDE, fg=config.COLOR_BLANCO, cursor="hand2")
+    btn_save.pack(side=tk.LEFT, padx=8)
+
+    btn_del = tk.Button(btn_frame, text="Borrar tren", command=borrar, bg=config.COLOR_ROJO, fg=config.COLOR_BLANCO, cursor="hand2")
+    btn_del.pack(side=tk.LEFT, padx=8)
+
+    def cerrar():
+        editor.destroy()
+
+    btn_close = tk.Button(right, text="SCerrar", command=cerrar, bg=config.COLOR_AZUL, fg=config.COLOR_BLANCO, cursor="hand2")
+    btn_close.grid(row=6, column=0, columnspan=2, pady=10)
+
+
+def crear_tren(ventana_actual):
+    """Abre ventana para crear un nuevo tren y lo guarda en modelos/trenes.json"""
+    ventana_actual.withdraw()
+    crear = tk.Toplevel()
+    crear.title("Crear Tren")
+    crear.geometry("520x320")
+    crear.configure(bg=config.COLOR_GRIS)
+
+    titulo = tk.Label(crear, text="CREAR TREN", font=("Arial", 18, "bold"), bg=config.COLOR_GRIS, fg=config.COLOR_BLANCO)
+    titulo.pack(pady=12)
+
+    frame = tk.Frame(crear, bg=config.COLOR_GRIS)
+    frame.pack(pady=8)
+
+    tk.Label(frame, text="Nombre:", bg=config.COLOR_GRIS, fg=config.COLOR_BLANCO).grid(row=0, column=0, sticky="w", padx=8, pady=6)
+    e_nombre = tk.Entry(frame, width=30)
+    e_nombre.grid(row=0, column=1, pady=6)
+
+    tk.Label(frame, text="Velocidad:", bg=config.COLOR_GRIS, fg=config.COLOR_BLANCO).grid(row=1, column=0, sticky="w", padx=8, pady=6)
+    e_vel = tk.Entry(frame, width=20)
+    e_vel.grid(row=1, column=1, pady=6)
+
+    tk.Label(frame, text="Pasajeros/vagón:", bg=config.COLOR_GRIS, fg=config.COLOR_BLANCO).grid(row=2, column=0, sticky="w", padx=8, pady=6)
+    e_ppv = tk.Entry(frame, width=20)
+    e_ppv.grid(row=2, column=1, pady=6)
+
+    tk.Label(frame, text="Cantidad vagones:", bg=config.COLOR_GRIS, fg=config.COLOR_BLANCO).grid(row=3, column=0, sticky="w", padx=8, pady=6)
+    e_ccv = tk.Entry(frame, width=20)
+    e_ccv.grid(row=3, column=1, pady=6)
+
+    label_msg = tk.Label(crear, text="", bg=config.COLOR_GRIS)
+    label_msg.pack(pady=6)
+
+    def guardar_nuevo():
+        nombre = e_nombre.get().strip()
+        vel = e_vel.get().strip()
+        ppv = e_ppv.get().strip()
+        ccv = e_ccv.get().strip()
+        if not nombre:
+            label_msg.config(text="El nombre es obligatorio", fg=config.COLOR_ROJO)
+            return
+        if not (vel.isdigit() and ppv.isdigit() and ccv.isdigit()):
+            label_msg.config(text="Velocidad/ppv/ccv deben ser números", fg=config.COLOR_ROJO)
+            return
+        datos = {"nombre": nombre, "velocidad": int(vel), "ppv": int(ppv), "ccv": int(ccv)}
+        archivo_trenes = os.path.join(ruta_raiz, "modelos", "trenes.json")
+        try:
+            guardar_objetos(datos, archivo_trenes)
+            label_msg.config(text=f"Tren '{nombre}' guardado.", fg=config.COLOR_VERDE)
+        except Exception as e:
+            label_msg.config(text=f"Error guardando: {e}", fg=config.COLOR_ROJO)
+
+        #delay para ver mensaje
+        e_nombre.delete(0, tk.END)
+        e_vel.delete(0, tk.END)
+        e_ppv.delete(0, tk.END)
+        e_ccv.delete(0, tk.END)
+
+    def volver():
+        crear.destroy()
+        ventana_actual.deiconify()
+
+    btn_frame = tk.Frame(crear, bg=config.COLOR_GRIS)
+    btn_frame.pack(pady=10)
+
+    btn_guardar = tk.Button(btn_frame, text="Guardar Tren", command=guardar_nuevo, bg=config.COLOR_VERDE, fg=config.COLOR_BLANCO, cursor="hand2")
+    btn_guardar.pack(side=tk.LEFT, padx=8)
+
+    btn_volver = tk.Button(btn_frame, text="Volver", command=volver, bg=config.COLOR_AZUL, fg=config.COLOR_BLANCO, cursor="hand2")
+    btn_volver.pack(side=tk.LEFT, padx=8)
 
 def crear_estacion(ventana_actual):
     #Abre ventana nueva estación
