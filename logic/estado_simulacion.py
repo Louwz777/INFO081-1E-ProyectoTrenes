@@ -2,16 +2,20 @@
 Módulo para el manejo del estado de la simulación.
 """
 from datetime import datetime, timedelta
+import random;
 
 class EstadoSimulacion:
     """
     Clase que representa el estado actual de la simulación.
     """
-    def __init__(self, fecha_inicio_str="2015-01-01 07:00:00"):
+    def __init__(self, fecha_inicio_str="2015-01-01 07:00:00",semilla=random.randint(0,10000)):
         """
         Inicializa el estado de la simulación con la hora actual.
+        
         Args:
             fecha_inicio_str (str): Fecha y hora inicial en formato "YYYY-MM-DD HH:MM:SS".
+                tiene valor predeterminado 1 de enero de 2015 a las 07:00:00.
+        
         """
         try:
             self.tiempo_actual = datetime.strptime(fecha_inicio_str, "%Y-%m-%d %H:%M:%S")

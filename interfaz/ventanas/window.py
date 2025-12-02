@@ -17,12 +17,14 @@ ruta_imagen = os.path.join(ruta_raiz, "interfaz", "images", "bg.png")
 ###IMPORTACIONES
 from modelos.clases import estacion, guardar_objetos
 from interfaz import settings as config
+from logic.estado_simulacion import EstadoSimulacion
 
 
 #ESTACIONES CREADAS
 lista_estaciones = []
 
 ##################################################################################
+
 
 def iniciar_simulacion(ventana_actual):
     """Abre una nueva ventana de simulación y oculta la principal."""
@@ -32,20 +34,11 @@ def iniciar_simulacion(ventana_actual):
     nueva.title("Simulación en curso")
     nueva.geometry("800x600")
     nueva.configure(bg="#e8e8e8")
-
-    # Mensaje dentro de la nueva ventana
-    etiqueta = tk.Label(
-        nueva,
-        text="SIMULACION",
-        font=("Arial", 20, "bold"),
-        bg="#e8e8e8",
-        fg="#333"
-    )
-    etiqueta.pack(pady=50)
-
+    
+ # Muestra de nuevo la ventana principal
     def volver_menu():
         nueva.destroy()
-        ventana_actual.deiconify()  # Muestra de nuevo la ventana principal
+        ventana_actual.deiconify() 
 
     boton_volver = tk.Button(
         nueva,
@@ -56,6 +49,26 @@ def iniciar_simulacion(ventana_actual):
         fg="black"
     )
     boton_volver.pack(pady=20)
+    
+    estado=EstadoSimulacion()
+    
+    label_reloj = tk.Label(
+        nueva,
+        text="",
+        font=("Arial", 24, "bold"),
+        bg="#e8e8e8",
+        fg="#0066cc"
+    )
+    label_reloj.pack(pady=100)
+    
+    def actualizar_tiempo():
+        hora, fecha = estado.actualizar_display()
+        label_reloj.config(text=f"Hora: {hora}   Fecha: {fecha}")
+        estado.avanzar_tiempo(segundos=1)
+        nueva.after(1000, actualizar_tiempo)
+
+    
+    actualizar_tiempo()
 
 def ventana_principal():
     ###Inicio desarrollo ventanas
