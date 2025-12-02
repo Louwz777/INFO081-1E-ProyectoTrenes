@@ -15,12 +15,15 @@ class EstadoSimulacion:
         Args:
             fecha_inicio_str (str): Fecha y hora inicial en formato "YYYY-MM-DD HH:MM:SS".
                 tiene valor predeterminado 1 de enero de 2015 a las 07:00:00.
+            semilla (int): Semilla para la generación aleatoria de eventos.
+                tiene valor predeterminado un número aleatorio entre 0 y 10000.
         
         """
         try:
             self.tiempo_actual = datetime.strptime(fecha_inicio_str, "%Y-%m-%d %H:%M:%S")
         except ValueError:
             self.tiempo_actual = datetime(2015, 1, 1, 7, 0, 0)
+        random.seed(semilla)
             
     def actualizar_display(self):
         """
@@ -41,6 +44,22 @@ class EstadoSimulacion:
         """
         self.tiempo_actual += timedelta(seconds=segundos)
         return self.tiempo_actual
+
+    def generador_eventos(self):
+        """
+        Genera eventos de forma aleatoria.
+        Returns:
+            str: Descripción del evento generado.
+        """
+        eventos = [
+            "Retraso en la línea A",
+            "Accidente en la estación Central",
+            "Aumento de pasajeros en la línea B",
+            "Mantenimiento programado en la línea C",
+            "Condiciones climáticas adversas"
+        ]
+        evento = random.choice(eventos)
+        return evento
 
     def __str__(self):
         hora, fecha = self.actualizar_display()

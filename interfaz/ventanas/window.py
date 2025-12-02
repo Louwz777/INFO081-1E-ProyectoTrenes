@@ -3,6 +3,7 @@ import os
 import tkinter as tk    
 import tkinter.font as tkfont
 import json
+import random
 from tkinter import messagebox
 from PIL import ImageTk, Image
 
@@ -50,7 +51,7 @@ def iniciar_simulacion(ventana_actual):
     )
     boton_volver.pack(pady=20)
     
-    estado=EstadoSimulacion()
+    estado=EstadoSimulacion(semilla=1)
     
     label_reloj = tk.Label(
         nueva,
@@ -61,14 +62,32 @@ def iniciar_simulacion(ventana_actual):
     )
     label_reloj.pack(pady=100)
     
+    label_eventos = tk.Label(
+        nueva,
+        text="",
+        font=("Arial", 24, "bold"),
+        bg="#e8e8e8",
+        fg="#cc0000"
+        )
+    label_eventos.pack(pady=20)
+    
+    #funcion para actualizar tiempo, cada 1000ms se llama denuevo a si misma, actualizando el texto
     def actualizar_tiempo():
         hora, fecha = estado.actualizar_display()
         label_reloj.config(text=f"Hora: {hora}   Fecha: {fecha}")
         estado.avanzar_tiempo(segundos=1)
         nueva.after(1000, actualizar_tiempo)
 
+    #genera un evento al azar cada cierto tiempo         
+    def generar_evento():
+        evento = estado.generador_eventos()
+        label_eventos.config(text=f"Evento: {evento}")
+        tiempo_siguiente = random.randint(5, 15) * 1000  
+        nueva.after(tiempo_siguiente, generar_evento)       
+
     
     actualizar_tiempo()
+    generar_evento()
 
 def ventana_principal():
     ###Inicio desarrollo ventanas
