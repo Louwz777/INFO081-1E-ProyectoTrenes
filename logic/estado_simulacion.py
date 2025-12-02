@@ -1,7 +1,7 @@
 """
 Módulo para el manejo del estado de la simulación.
 """
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, time
 from modelos.clases import *
 from logic.sistema_eventos.eventos import crear_evento_niebla
 import random;
@@ -58,6 +58,11 @@ class EstadoSimulacion:
             datetime: Nuevo tiempo simulado.
         """
         self.tiempo_actual += timedelta(seconds=segundos)
+        
+        if self.tiempo_actual.hour >= 20:
+            nueva_fecha = self.tiempo_actual.date() + timedelta(days=1)
+            self.tiempo_actual = datetime.combine(nueva_fecha, time(7, 0, 0))
+        
         return self.tiempo_actual
 
     def generador_eventos(self):
