@@ -26,8 +26,9 @@ class tren:
     
 class pasajero:
 
-    def __init__(self,id,inicio,destino,retorno):
+    def __init__(self,creacion,id,inicio,destino,retorno):
         self.id = id
+        self.creacion = creacion
         self.inicio = inicio
         self.destino = destino
         self.retorno = retorno
@@ -160,6 +161,7 @@ def cargar_objetos(archivo: str,clase) -> list:
         objetos.append(clase(**atributos))
 
     return objetos
+
 
 """
 ##comprobar carga de objetos
