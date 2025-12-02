@@ -1,5 +1,6 @@
 from interfaz.ventanas import window
 
+
 def main():
    window.ventana_principal()
 
