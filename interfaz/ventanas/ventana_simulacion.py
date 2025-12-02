@@ -18,7 +18,8 @@ def iniciar_simulacion(ventana_actual,semilla):
     
     # Inicializa el estado de la simulación
     #si semilla no es un numero, se genera una aleatoria
-    semilla =int(semilla) if semilla.isdigit() else random.randint(0,10000)
+    valor = semilla.get().strip()
+    semilla =int(valor) if valor.isdigit() else random.randint(0,10000)
     estado=EstadoSimulacion(semilla=int(semilla))
     
  # Muestra de nuevo la ventana principal
