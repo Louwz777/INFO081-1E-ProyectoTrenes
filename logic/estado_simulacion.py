@@ -24,6 +24,7 @@ class EstadoSimulacion:
             self.tiempo_actual = datetime.strptime(fecha_inicio_str, "%Y-%m-%d %H:%M:%S")
         except ValueError:
             self.tiempo_actual = datetime(2015, 1, 1, 7, 0, 0)
+        
         random.seed(semilla)
         
         #parametros adicionales 
@@ -45,6 +46,7 @@ class EstadoSimulacion:
         hora = self.tiempo_actual.strftime("%H:%M:%S")
         fecha = self.tiempo_actual.strftime("%d/%m/%Y")
         return hora, fecha
+    
     def avanzar_tiempo(self, segundos=1):
         """
         Avanza la hora simulado por cierta cantidad de segundos.
@@ -61,6 +63,7 @@ class EstadoSimulacion:
         Genera eventos de forma aleatoria.
         Returns:
             str: Descripción del evento generado.
+        no se utiliza actualmente, ya que window llama a eventos directamente.
         """
         eventos = [
             crear_evento_niebla(self)

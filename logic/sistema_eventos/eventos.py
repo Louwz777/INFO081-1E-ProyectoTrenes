@@ -6,6 +6,10 @@ se guardara cada opcion elegida por el usuario.
 from __future__ import annotations
 from typing import Callable,Any
 import random;
+
+"""
+clases para eventos y opciones
+"""
 class opcion:
     def __init__(self,descripcion:str,efecto: Callable[[Any], Any] = None):
         """
@@ -14,14 +18,15 @@ class opcion:
             descripcion (str): Descripción de la opción.
             efecto (callable): Función que representa el efecto de la opción.
         """
-        self.nombre = descripcion
+        self.descripcion = descripcion
         self.efecto = efecto
         
     def ejecutar_efecto(self, estado, nombre_evento: str):
         #guarda la eleccion en el historial
-        estado.historial_elecciones.append(self.nombre)
+        estado.historial_elecciones.append(self.descripcion)
         estado.historial_eventos.append(nombre_evento)
         return self.efecto(estado)
+
 class Evento:
     def __init__(self,nombre:str, descripcion:str, opcion1:opcion,opcion2:opcion):
         """
@@ -35,7 +40,12 @@ class Evento:
         self.descripcion = descripcion
         self.opcion1 = opcion1
         self.opcion2 = opcion2
-    
+
+     
+"""
+funciones para crear eventos
+"""
+ 
 def crear_evento_niebla(estado:Callable[[Any], Any] = None)->Evento:
     """
     Escoge un tren al azar y crea un evento de niebla que afecta su velocidad.
@@ -57,7 +67,7 @@ def crear_evento_niebla(estado:Callable[[Any], Any] = None)->Evento:
 
     descripcion_evento = f"Hay una densa niebla que afecta al tren {tren.nombre}. ¿Qué deseas hacer?"
     opcion1 = opcion(
-        descripcion="hacer que el tren vaya a menor velocidad  mayor .", 
+        descripcion="hacer que el tren vaya a menor velocidad.", 
         efecto=efecto_reducir_velocidad
     )
     opcion2= opcion(

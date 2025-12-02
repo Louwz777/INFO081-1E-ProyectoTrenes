@@ -1,0 +1,103 @@
+import sys
+import os
+import tkinter as tk    
+import tkinter.font as tkfont
+from logic.sistema_eventos.eventos import crear_evento_niebla
+from logic.estado_simulacion import EstadoSimulacion
+import random
+
+
+def iniciar_simulacion(ventana_actual):
+    """Abre una nueva ventana de simulación y oculta la principal."""
+    ventana_actual.withdraw()  
+
+    nueva = tk.Toplevel()
+    nueva.title("Simulación en curso")
+    nueva.geometry("800x600")
+    nueva.configure(bg="#e8e8e8")
+    
+ # Muestra de nuevo la ventana principal
+    def volver_menu():
+        nueva.destroy()
+        ventana_actual.deiconify() 
+
+    boton_volver = tk.Button(
+        nueva,
+        text="Volver al menú principal",
+        command=volver_menu,
+        font=("Arial", 14),
+        bg="white",
+        fg="black"
+    )
+    boton_volver.pack(pady=20)
+    
+    estado=EstadoSimulacion(semilla=1)
+    
+    label_reloj = tk.Label(
+        nueva,
+        text="",
+        font=("Arial", 24, "bold"),
+        bg="#e8e8e8",
+        fg="#0066cc"
+    )
+    label_reloj.pack(pady=100)
+    
+    label_eventos = tk.Label(
+        nueva,
+        text="",
+        font=("Arial", 24, "bold"),
+        bg="#e8e8e8",
+        fg="#cc0000"
+        )
+    label_eventos.pack(pady=20)
+    
+    frame_opciones = tk.Frame(nueva, bg="#e8e8e8")
+    frame_opciones.pack(pady=20)
+    
+
+    
+    #funcion para actualizar tiempo, cada 1000ms se llama denuevo a si misma, actualizando el texto
+    def actualizar_tiempo():
+        hora, fecha = estado.actualizar_display()
+        label_reloj.config(text=f"Hora: {hora}   Fecha: {fecha}")
+        estado.avanzar_tiempo(segundos=1)
+        nueva.after(1000, actualizar_tiempo)
+        
+    def aplicar_opcion(op):
+        resultado = op.efecto(estado)
+        label_eventos.config(text=str(resultado))
+
+    #genera un evento al azar cada cierto tiempo         
+    def generar_evento():
+        evento = crear_evento_niebla(estado)
+        
+        label_eventos.config(text=f"Evento: {evento.nombre}\n{evento.descripcion}")
+        
+        for widget in frame_opciones.winfo_children():
+            widget.destroy()
+        
+        boton1 = tk.Button(
+            frame_opciones,
+            text=evento.opcion1.descripcion,
+            command=lambda: aplicar_opcion(evento.opcion1),
+            font=("Arial", 12),
+            bg="white"
+        )
+        boton1.pack(pady=5)
+        # Botón opción 2
+        boton2 = tk.Button(
+            frame_opciones,
+            text=evento.opcion2.descripcion,
+            command=lambda: aplicar_opcion(evento.opcion2),
+            font=("Arial", 12),
+            bg="white"
+        )
+        boton2.pack(pady=5)
+    
+        tiempo_siguiente = random.randint(5, 15) * 1000  
+        nueva.after(tiempo_siguiente, generar_evento) 
+              
+
+    
+    actualizar_tiempo()
+    nueva.after(100,generar_evento)
