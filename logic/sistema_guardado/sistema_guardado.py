@@ -5,7 +5,6 @@ Maneja la persistencia de datos en formatos JSON, Parquet y CSV.
 
 import json
 import csv
-import os
 from pathlib import Path
 from datetime import datetime
 
@@ -401,4 +400,3 @@ class SistemaGuardado:
             # Restaurar carpeta original si se canceló
             self.carpeta_datos = carpeta_original
             return None
-
