@@ -1,17 +1,42 @@
 {
-    "Limbus": {
-        "nombre": "Limbus",
-        "poblacion": 15,
+    "Estación Central (Santiago)": {
+        "nombre": "Estación Central (Santiago)",
+        "poblacion": 8422459,
         "lineas": [
-            "L1"
+            "L1CS",
+            "L2CS",
+            "L1RS",
+            "L2RS"
         ]
     },
-    "Pibble Palace": {
-        "nombre": "Pibble Palace",
-        "poblacion": 100,
+    "Rancagua": {
+        "nombre": "Rancagua",
+        "poblacion": 274407,
         "lineas": [
-            "L3",
-            "L6"
+            "L1TR",
+            "L2TR",
+            "L1RS",
+            "L2RS"
+        ]
+    },
+    "Talca": {
+        "nombre": "Talca",
+        "poblacion": 242344,
+        "lineas": [
+            "L1TC",
+            "L2TC",
+            "L1TR",
+            "L2TR"
+        ]
+    },
+    "Chillán": {
+        "nombre": "Chillán",
+        "poblacion": 204091,
+        "lineas": [
+            "L1CS",
+            "L2CS",
+            "L1TC",
+            "L2TC"
         ]
     }
 }
