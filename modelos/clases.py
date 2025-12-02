@@ -126,9 +126,11 @@ def guardar_pasajeros(datos: dict, ruta: str):
 Funciones para lectura de objetos
 """
 
-def leer_json(ruta: str):
+def json_dicc(ruta: str):
     """
     recibe una ruta de archivo .json y devuelve su contenido como diccionario
+    cambiar ruta segun su clase
+    no se porque hice esta funcion si las siguiente funcione hace lo mismo
     """
     
     #Si no existe el archivo devuelve un diccionario vacio
@@ -142,7 +144,26 @@ def leer_json(ruta: str):
     except json.JSONDecodeError:
         return {}
 
+def cargar_objetos(archivo: str,clase) -> list:
+    """
+    devuelve una lista de objetos cargados desde un archivo .json
+    """
+    #abre el archivo y carga su contenido como diccionario
+    with open(archivo, "r", encoding="utf-8") as f:
+        data = json.load(f)
+        
+    #lista que se va a retornar
+    objetos = []
+    
+    #por cada 
+    for atributos in data.values():
+        objetos.append(clase(**atributos))
 
-tren1 = tren("fast", 1225, 100, 50)
-dic_tren=tren1.convertir_dicc()
-guardar_objetos(dic_tren, "modelos/trenes.json")
+    return objetos
+
+"""
+##comprobar carga de objetos
+trenes_cargados= cargar_trenes("modelos/trenes.json")
+for i in dicc:
+    print(f"Tren: {i}, Atributos: {dicc[i]}")
+"""
