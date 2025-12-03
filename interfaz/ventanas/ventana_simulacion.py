@@ -25,11 +25,12 @@ def iniciar_simulacion(ventana_actual,semilla):
         ventana_simulacion.destroy()
         ventana_actual.deiconify()
         ventana_actual.state('zoomed')
+        estado.guardar_historial()
 
     boton_volver = tk.Button(
         ventana_simulacion,
         text="Volver al menú principal",
-        command=volver_menu,
+        command= volver_menu,
         font=("Arial", 14),
         bg="white",
         fg="black"
