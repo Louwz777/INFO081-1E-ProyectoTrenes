@@ -119,14 +119,43 @@ def iniciar_simulacion(ventana_actual, semilla, ruta_tren: str = None, ruta_est:
         estado.segundos_desde_ultimo_evento = 0
         estado.proximo_evento = random.randint(5, 15)
         
-    pausa = False
+        
+    #funcion para saltar al siguiente evento
+    #max pq sino puede saltar atras si ya paso el evento
+    #toda la funcion que tenia estaba mala, esto esta casi completamente hecho con IA
+    def saltar_siguiente_evento():
+        nonlocal pausa
+        pausa = False
+
+        # segundos hasta el próximo evento
+        segundos_a_saltar = max(0, estado.proximo_evento - estado.segundos_desde_ultimo_evento)
+
+        #generar pasajeros
+        estado.generar_pasajeros_en_estaciones(segundos=segundos_a_saltar)
+        # Avanzar tiempo
+        estado.avanzar_tiempo(segundos=segundos_a_saltar)
+        estado.segundos_desde_ultimo_evento = estado.proximo_evento
+
     
-    #funcion para actualizar tiempo, cada 1000ms se llama denuevo a si misma, actualizando el texto
+    boton_saltar = tk.Button(
+    ventana_simulacion,
+    text="Saltar al siguiente evento",
+    command=saltar_siguiente_evento,
+    font=("Arial", 14),
+    bg="yellow",
+    fg="black"
+    )
+    boton_saltar.pack(side=tk.BOTTOM, pady=10)
+
+        
+    #funcion para actualizar tiempo, cada 1000ms se llama denuevo a si misma, actualizando cosas
+    pausa = False
     def actualizar_tiempo():
  
         if not pausa:
+            
+            #actualizar fecha y hora
             hora, fecha = estado.actualizar_display()
- 
             label_reloj.config(text=f"Hora: {hora}   Fecha: {fecha}")
             
             # Actualizar estado de los trenes
@@ -143,18 +172,17 @@ def iniciar_simulacion(ventana_actual, semilla, ruta_tren: str = None, ruta_est:
             for est in estado.estaciones:
                 status_pasajeros += f"{est.nombre}: {len(est.pasajeros_esperando)} esperando\n"
             label_eventos.config(text=status_pasajeros)
-            #manejo de eventos
+            
+            #manejo de tiempos
             estado.avanzar_tiempo(segundos=1)
             estado.segundos_desde_ultimo_evento += 1
             
+            #genera eventos si paso el tiempo 
             if estado.segundos_desde_ultimo_evento >= estado.proximo_evento:
                 generar_evento()
         
-            # Genera pasajeros cada minuto
-            if estado.tiempo_actual.second % 60 == 0:  
-                for est in estado.estaciones:
-                    nuevos_pasajeros = est.generar_pasajeros(1, estado.estaciones)  # 1 minuto de simulación
-                    est.pasajeros_esperando.extend(nuevos_pasajeros)
+            #genera pasajeros
+            estado.generar_pasajeros_en_estaciones(segundos=1)
             
             
         ventana_simulacion.after(1000, actualizar_tiempo)

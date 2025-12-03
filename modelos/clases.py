@@ -4,7 +4,7 @@
 import json;
 import os;
 import pandas as pd;
-from generadores import *
+from generadores.generadors.generador_batido import *
 import random
 
 
@@ -39,7 +39,7 @@ class pasajero:
 class estacion:
 
     def __init__(self,nombre:str,poblacion:int,lineas:list,rutas=None,rutas_rotacion:int=0,
-                 generador = GeneradorBatido):
+                 generador = GeneradorShake):
         self.nombre = nombre
         self.poblacion = poblacion
         self.lineas = lineas 

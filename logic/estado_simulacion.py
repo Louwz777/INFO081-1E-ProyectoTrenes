@@ -41,8 +41,9 @@ class EstadoSimulacion:
         self.estaciones = cargar_objetos(ruta_est, estacion)
         
         #parametros tiempo
-        self.proximo_evento= random.randint(0, 15)  #segundos hasta el proximo evento
+        self.proximo_evento= 60*random.randint(1, 30)  #genera un evento al "azar"(solo tenemos 1 evento) entre 1 y 30 minutos
         self.segundos_desde_ultimo_evento = 0
+        self.segundos_desde_ultimo_pasajero=0
         
         #Mantiene un registro de cuantos pasajeros hay en cada tren
         #inicializa en 0 para cada tren
@@ -75,8 +76,21 @@ class EstadoSimulacion:
         if self.tiempo_actual.hour >= 20:
             nueva_fecha = self.tiempo_actual.date() + timedelta(days=1)
             self.tiempo_actual = datetime.combine(nueva_fecha, time(7, 0, 0))
+
         
         return self.tiempo_actual
+
+    def generar_pasajeros_en_estaciones(self, segundos=1):
+        self.segundos_desde_ultimo_pasajero += segundos
+
+        # Convertimos los segundos a minutos como float
+        minutos_totales = self.segundos_desde_ultimo_pasajero / 60  # float, puede ser <1
+
+        for est in self.estaciones:
+            nuevos_pasajeros = est.generar_pasajeros(minutos=minutos_totales, estaciones=self.estaciones) or []
+            est.pasajeros_esperando.extend(nuevos_pasajeros)
+
+
 
     def guardar_historial(self, ruta_archivo="historial_simulacion.json"):
         """
@@ -92,9 +106,7 @@ class EstadoSimulacion:
         with open(ruta_archivo, 'w') as archivo:
             json.dump(historial, archivo, indent=4)
     
-    def __str__(self):
-        hora, fecha = self.actualizar_display()
-        return f"EstadoSimulacion(hora_actual={hora}, fecha={fecha})"
+
 
     ##########guardar simulacion##########      
     def guardar_simulacion(self, nombre_guardado: str, carpeta="guardado"):

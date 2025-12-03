@@ -55,3 +55,34 @@ class GeneradorBatido(Generador):
 
         # En los minutos donde no hay ráfaga, no se generan clientes
         return clientes
+
+class GeneradorShake(Generador):
+    INTERVALO_BATIDA = 15  # o cargar desde config como antes
+
+    def __init__(self, poblacion, seed=123, fecha_inicial=dt.datetime(2025,1,1), hora_apertura=dt.time(7,0), hora_cierre=dt.time(20,0)):
+        super().__init__(poblacion, seed, fecha_inicial, hora_apertura, hora_cierre)
+        self.acumulador_minutos = 0  # acumula minutos desde la última batida
+
+    def generar_clientes(self, minutos: int, constructor: Callable[[int, dt.datetime], Any], update: bool = True) -> list[Any]:
+        if update:
+            self.current_datetime += dt.timedelta(minutes=minutos)
+
+        self.acumulador_minutos += minutos
+        clientes = []
+
+        # Cuántas ráfagas completas pasaron desde la última vez
+        batidas_completas = int(self.acumulador_minutos // self.INTERVALO_BATIDA)
+        if batidas_completas > 0:
+            minutos_funcionamiento = self.minutos_de_funcionamiento()
+            num_batidas = minutos_funcionamiento // self.INTERVALO_BATIDA
+            clientes_por_batida = int(self.poblacion * 0.2 / num_batidas)
+
+            for _ in range(batidas_completas):
+                for _ in range(clientes_por_batida):
+                    val = self.rdm.randint(0, 2_000_000)
+                    clientes.append(constructor(val, self.current_datetime))
+
+            # restamos los minutos ya usados en ráfagas
+            self.acumulador_minutos %= self.INTERVALO_BATIDA
+
+        return clientes
