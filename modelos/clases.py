@@ -6,6 +6,7 @@ import os;
 import pandas as pd;
 from gen_BAT import *
 
+
 ##crea una variable con la ruta de la carpeta datos
 
 
@@ -67,7 +68,6 @@ class estacion:
             "rutas": self.rutas,
             "rutas_rotacion": self.rutas_rotacion
             }
-
 
 
 
