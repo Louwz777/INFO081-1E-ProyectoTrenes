@@ -45,12 +45,11 @@ class pasajero:
             }
         
 class estacion:
-    def __init__(self,nombre:str,poblacion:int,lineas:list, rutas:dict=None):
+
+    def __init__(self,nombre:str,poblacion:int,lineas:list):
         self.nombre = nombre
         self.poblacion = poblacion
-        self.lineas = lineas
-        # rutas: mapping from linea -> estacion_destino (str). Default empty dict
-        self.rutas = rutas or {}
+        self.lineas = lineas 
 
     def convertir_dicc(self):
         return {

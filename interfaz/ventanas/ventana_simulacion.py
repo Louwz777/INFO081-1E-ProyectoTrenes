@@ -1,8 +1,6 @@
-import sys
-import os
 import tkinter as tk    
 import tkinter.font as tkfont
-from logic.sistema_eventos.eventos import crear_evento_niebla
+from logic.sistema_eventos.eventos import *
 from logic.estado_simulacion import EstadoSimulacion
 import random
 
@@ -82,12 +80,15 @@ def iniciar_simulacion(ventana_actual,semilla):
                 label_reloj.config(text=f"Hora: {hora}   Fecha: {fecha}")
             estado.avanzar_tiempo(segundos=1)
         ventana_simulacion.after(1000, actualizar_tiempo)
+    
 
     def aplicar_opcion(op):
         resultado = op.efecto(estado)
         label_eventos.config(text=str(resultado))
         nonlocal pausa
         pausa = False
+        tiempo_siguiente = random.randint(5, 15) * 1000  
+        ventana_simulacion.after(tiempo_siguiente, generar_evento) 
 
     #genera un evento al azar cada cierto tiempo         
     def generar_evento():
@@ -95,32 +96,10 @@ def iniciar_simulacion(ventana_actual,semilla):
         pausa = True
 
         evento = crear_evento_niebla(estado)
-        label_eventos.config(text=f"Evento: {evento.nombre}\n{evento.descripcion}")
-                
-        for widget in frame_opciones.winfo_children():
-            widget.destroy()
-        
-        boton1 = tk.Button(
-            frame_opciones,
-            text=evento.opcion1.descripcion,
-            command=lambda: aplicar_opcion(evento.opcion1),
-            font=("Arial", 12),
-            bg="white"
-        )
-        boton1.pack(pady=5)
-        # Botón opción 2
-        boton2 = tk.Button(
-            frame_opciones,
-            text=evento.opcion2.descripcion,
-            command=lambda: aplicar_opcion(evento.opcion2),
-            font=("Arial", 12),
-            bg="white"
-        )
-        boton2.pack(pady=5)
+        mostrar_evento_en_ventana(evento,aplicar_opcion)
     
-        tiempo_siguiente = random.randint(5, 15) * 1000  
-        ventana_simulacion.after(tiempo_siguiente, generar_evento) 
+
               
 
     actualizar_tiempo()
-    ventana_simulacion.after(1000,generar_evento)
+    ventana_simulacion.after(random.randint(5, 15) * 1000,generar_evento)

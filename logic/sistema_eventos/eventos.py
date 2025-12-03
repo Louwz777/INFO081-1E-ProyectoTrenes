@@ -6,6 +6,65 @@ se guardara cada opcion elegida por el usuario.
 from __future__ import annotations
 from typing import Callable,Any
 import random;
+import tkinter as tk
+
+"""
+ventana para eventos
+"""
+def mostrar_evento_en_ventana(evento, aplicar_opcion):
+    ventana = tk.Toplevel()
+    ventana.title(evento.nombre)
+    ventana.geometry("400x300")
+    ventana.configure(bg="#ffe6e6")
+    
+    
+    # Deshabilitar el cierre de la ventana, porque no puedes escapar tus responsabilidades, tienes que elegir
+    def evitar_cierre():
+        if not ventana.allowed_close:
+            pass
+    def cerrar_ventana():
+        ventana.allowed_close = True
+        ventana.destroy()
+           
+        
+    ventana.allowed_close = False
+    ventana.protocol("WM_DELETE_WINDOW", lambda: evitar_cierre())
+
+    tk.Label(
+        ventana,
+        text=evento.nombre,
+        font=("Arial", 18, "bold"),
+        bg="#ffe6e6",
+        fg="red"
+    ).pack(pady=10)
+
+    tk.Label(
+        ventana,
+        text=evento.descripcion,
+        font=("Arial", 12),
+        bg="#ffe6e6"
+    ).pack(pady=10)
+
+    frame = tk.Frame(ventana, bg="#ffe6e6")
+    frame.pack(pady=20)
+
+    # Botón opción 1
+    tk.Button(
+        frame,
+        text=evento.opcion1.descripcion,
+        command=lambda: (aplicar_opcion(evento.opcion1), cerrar_ventana()),
+        bg="white"
+    ).pack(pady=5)
+
+    # Botón opción 2
+    tk.Button(
+        frame,
+        text=evento.opcion2.descripcion,
+        command=lambda: (aplicar_opcion(evento.opcion2), cerrar_ventana()),
+        bg="white"
+    ).pack(pady=5)
+
+    return ventana
 
 """
 clases para eventos y opciones
