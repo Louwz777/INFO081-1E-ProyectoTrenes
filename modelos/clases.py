@@ -19,6 +19,7 @@ class tren:
         self.ccv = ccv
         self.situacion = situacion
         self.pasajeros_a_bordo = 0
+        self.velocidad_actual= 0
     
     def capacidad(self):
         return self.ccv*self.ppv
