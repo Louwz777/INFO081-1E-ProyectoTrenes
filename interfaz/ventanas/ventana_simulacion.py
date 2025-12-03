@@ -93,7 +93,6 @@ def iniciar_simulacion(ventana_actual, semilla, ruta_tren: str = None, ruta_est:
             
             # Actualizar estado de los trenes
             status_text = "Estado Trenes:\n"
-            
             for t in estado.trenes:
                 # Usar velocidad si fue modificada por evento, sino velocidad_max
                 current_speed = getattr(t, 'velocidad', t.velocidad_max)
@@ -101,12 +100,24 @@ def iniciar_simulacion(ventana_actual, semilla, ruta_tren: str = None, ruta_est:
                 status_text += f"{t.nombre}: {passengers} pasajeros, {current_speed} km/h\n"
             label_trenes.config(text=status_text)
             
+            #mostrar en pantalla los pasajeros 
+            status_pasajeros = "Pasajeros en estaciones:\n"
+            for est in estado.estaciones:
+                status_pasajeros += f"{est.nombre}: {len(est.pasajeros_esperando)} esperando\n"
+            label_eventos.config(text=status_pasajeros)
+            #manejo de eventos
             estado.avanzar_tiempo(segundos=1)
             estado.segundos_desde_ultimo_evento += 1
             
             if estado.segundos_desde_ultimo_evento >= estado.proximo_evento:
                 generar_evento()
-
+        
+            # Genera pasajeros cada minuto
+            if estado.tiempo_actual.second % 60 == 0:  
+                for est in estado.estaciones:
+                    nuevos_pasajeros = est.generar_pasajeros(1, estado.estaciones)  # 1 minuto de simulación
+                    est.pasajeros_esperando.extend(nuevos_pasajeros)
+            
             
         ventana_simulacion.after(1000, actualizar_tiempo)
     
@@ -118,8 +129,5 @@ def iniciar_simulacion(ventana_actual, semilla, ruta_tren: str = None, ruta_est:
 
         evento = crear_evento_niebla(estado)
         mostrar_evento_en_ventana(evento,estado, lambda:reanudar_tiempo())
-    
-
-              
-
+        
     actualizar_tiempo()

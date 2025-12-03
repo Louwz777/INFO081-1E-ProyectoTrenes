@@ -5,6 +5,7 @@ import json;
 import os;
 import pandas as pd;
 from generadores import *
+import random
 
 
 ##crea una variable con la ruta de la carpeta datos
@@ -24,14 +25,7 @@ class tren:
     
     def capacidad(self):
         return self.ccv*self.ppv
-    def convertir_dicc(self):
-        return {
-            "nombre": self.nombre,
-            "velocidad": self.velocidad,
-            "ppv": self.ppv,
-            "ccv": self.ccv
-            }
-    
+
 class pasajero:
 
     def __init__(self,creacion,id,inicio,destino,retorno):
@@ -41,33 +35,40 @@ class pasajero:
         self.destino = destino
         self.retorno = retorno
 
-    def convertir_dicc(self):
-        return {
-            "id": self.id,
-            "creacion": self.creacion,
-            "inicio": self.inicio,
-            "destino": self.destino,
-            "retorno": self.retorno
-            }
         
 class estacion:
 
-    def __init__(self,nombre:str,poblacion:int,lineas:list,rutas:list=[],rutas_rotacion:int=0,generador:Generador = GeneradorBatido):
+    def __init__(self,nombre:str,poblacion:int,lineas:list,rutas=None,rutas_rotacion:int=0,
+                 generador = GeneradorBatido):
         self.nombre = nombre
         self.poblacion = poblacion
         self.lineas = lineas 
         self.rutas = rutas
-        self.rutas_rotacion = rutas_rotacion
+        self.rutas_rotacion = rutas_rotacion 
         self.pasajeros_esperando = []  # Lista para almacenar pasajeros que esperan en la estación
 
-    def convertir_dicc(self):
-        return {
-            "nombre": self.nombre,
-            "poblacion": self.poblacion,
-            "lineas": self.lineas,
-            "rutas": self.rutas,
-            "rutas_rotacion": self.rutas_rotacion
-            }
+        self.generador = generador(poblacion=self.poblacion)
+        
+    
+        
+    def generar_pasajeros(self, minutos: int,estaciones:list, update: bool = True) -> list:
+            """
+            Genera pasajeros utilizando el generador asignado a la estación.
+                No entiendo nada de esto, lo hizo copilot, pero parece que funciona
+            """
+            return self.generador.generar_clientes(minutos,
+                    constructor = lambda val, fecha: pasajero(
+                        creacion=fecha,
+                        id=val,
+                        inicio=self.nombre,
+                        destino=random.choice([est.nombre for est in estaciones if est.nombre != self.nombre]),
+                        retorno=random.randint(0,4320), # retorno en minutos   
+                        ),
+                update=update,
+        )
+
+
+
 
 
 
