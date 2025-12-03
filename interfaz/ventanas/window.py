@@ -4,6 +4,7 @@
 import sys
 import os
 import tkinter as tk
+from tkinter import filedialog
 import tkinter.font as tkfont
 from tkinter import messagebox
 from PIL import Image, ImageTk
@@ -13,7 +14,7 @@ from PIL import Image, ImageTk
 ruta_raiz = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 if ruta_raiz not in sys.path:
     sys.path.insert(0, ruta_raiz)
-
+from interfaz.ventanas.ventana_simulacion import iniciar_simulacion, iniciar_simulacion_desde_guardado
 from interfaz.ventanas.common import ruta_imagen
 from interfaz.ventanas.ventana_simulacion import iniciar_simulacion
 from interfaz.ventanas.pages import _pagina_edicion_impl, pagina_edicion_trenes
@@ -169,6 +170,24 @@ def ventana_principal():
         btn_personal = tk.Button(frame, text="Inicio personalizado", command=inicio_personalizado, bg=config.COLOR_VERDE, fg=config.COLOR_BLANCO, width=16, cursor="hand2")
         btn_personal.pack(side=tk.LEFT, padx=12)
 
+    def cargar_simulacion():
+        # Carpeta 'guardado' en la raíz del proyecto
+        carpeta_guardado = os.path.join(ruta_raiz, "guardado")
+        os.makedirs(carpeta_guardado, exist_ok=True)
+
+        ruta = filedialog.askopenfilename(
+            parent=ventana,
+            initialdir=carpeta_guardado,
+            title="Selecciona una simulación guardada",
+            filetypes=[("Archivos JSON", "*.json")]
+        )
+        if not ruta:
+            # Usuario canceló
+            return
+
+        # Se llama a la función que abre la ventana de simulación desde guardado
+        iniciar_simulacion_desde_guardado(ventana, ruta)
+
     boton = tk.Button(
         ventana,
         text="INICIAR SIMULACIÓN",
@@ -179,6 +198,23 @@ def ventana_principal():
         cursor="hand2",
     )
     boton.place(relx=config.BUTTON_SIMULACION_POS[0], rely=config.BUTTON_SIMULACION_POS[1], anchor="center", relwidth=config.BUTTON_RELWIDTH, relheight=config.BUTTON_RELHEIGHT)
+
+    boton_cargar = tk.Button(
+        ventana,
+        text="CARGAR SIMULACIÓN",
+        command=cargar_simulacion,
+        bg=config.COLOR_BLANCO,
+        fg=config.COLOR_GRIS,
+        font=btn_font,
+        cursor="hand2",
+    )
+    boton_cargar.place(
+        relx=config.BUTTON_SIMULACION_POS[0],
+        rely=config.BUTTON_SIMULACION_POS[1] + 0.1,
+        anchor="center",
+        relwidth=config.BUTTON_RELWIDTH,
+        relheight=config.BUTTON_RELHEIGHT
+    )
 
     boton_trenes = tk.Button(
         ventana,

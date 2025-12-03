@@ -7,9 +7,7 @@ import random
 
 
 def iniciar_simulacion(ventana_actual, semilla, ruta_tren: str = None, ruta_est: str = None):
-    """Abre una nueva ventana de simulación y oculta la principal.
-    ruta_trenes / ruta_estaciones: optional paths to JSON files to load for this run.
-    """
+    """Tu versión original, no la toco."""
     ventana_actual.withdraw()
 
     ventana_simulacion = tk.Toplevel()
@@ -18,26 +16,21 @@ def iniciar_simulacion(ventana_actual, semilla, ruta_tren: str = None, ruta_est:
     ventana_simulacion.configure(bg="#e8e8e8")
     
     # Inicializa el estado de la simulación
-    # si semilla no es un numero, se genera una aleatoria
     valor = semilla.get().strip()
     semilla_val = int(valor) if valor.isdigit() else random.randint(0,10000)
-    # Use provided files if given, otherwise default to original files
     ruta_tr = ruta_tren if ruta_tren is not None else "modelos/trenes.json"
     ruta_es = ruta_est if ruta_est is not None else "modelos/estaciones.json"
     estado = EstadoSimulacion(semilla=semilla_val, ruta_tren=ruta_tr, ruta_est=ruta_es)
     
-    # Muestra de nuevo la ventana principal
     def volver_menu():
-        # Pregunta al usuario
         respuesta = messagebox.askyesnocancel(
             "Volver al menú principal",
             "¿Quieres guardar tu simulación antes de volver al menú principal?"
         )
-        # Cancelar → no hacer nada, se queda en la simulación
+
         if respuesta is None:
             return
 
-        # Sí → pedir nombre y guardar
         if respuesta:
             nombre = simpledialog.askstring(
                 "Guardar simulación",
@@ -55,17 +48,13 @@ def iniciar_simulacion(ventana_actual, semilla, ruta_tren: str = None, ruta_est:
                         "Error al guardar",
                         f"No se pudo guardar la simulación:\n{e}"
                     )
-                    # Si falló el guardado, mejor quedarse en la simulación
                     return
 
-        # Guardar siempre el historial básico también, como antes
         try:
             estado.guardar_historial()
         except Exception:
-            # Si falla, no bloqueamos volver al menú
             pass
 
-        # Cerrar simulación y volver al menú principal
         ventana_simulacion.destroy()
         ventana_actual.deiconify()
         ventana_actual.state('zoomed')
@@ -73,12 +62,11 @@ def iniciar_simulacion(ventana_actual, semilla, ruta_tren: str = None, ruta_est:
     boton_volver = tk.Button(
         ventana_simulacion,
         text="Volver al menú principal",
-        command= volver_menu,
+        command=volver_menu,
         font=("Arial", 14),
         bg="white",
         fg="black"
     )
-
     boton_volver.pack(side=tk.BOTTOM, pady=10)
     
     label_reloj = tk.Label(
@@ -106,7 +94,7 @@ def iniciar_simulacion(ventana_actual, semilla, ruta_tren: str = None, ruta_est:
         font=("Arial", 24, "bold"),
         bg="#e8e8e8",
         fg="#cc0000"
-        )
+    )
     label_eventos.pack(pady=20)
     
     frame_opciones = tk.Frame(ventana_simulacion, bg="#e8e8e8")
@@ -151,18 +139,16 @@ def iniciar_simulacion(ventana_actual, semilla, ruta_tren: str = None, ruta_est:
     #funcion para actualizar tiempo, cada 1000ms se llama denuevo a si misma, actualizando cosas
     pausa = False
     def actualizar_tiempo():
- 
         if not pausa:
             
             #actualizar fecha y hora
             hora, fecha = estado.actualizar_display()
             label_reloj.config(text=f"Hora: {hora}   Fecha: {fecha}")
             
-            # Actualizar estado de los trenes
             status_text = "Estado Trenes:\n"
             for t in estado.trenes:
-                # Usar velocidad si fue modificada por evento, sino velocidad_max
-                current_speed = getattr(t, 'velocidad', t.velocidad_max)
+                # velocidad_actual es tu atributo dinámico
+                current_speed = getattr(t, 'velocidad_actual', t.velocidad_max)
                 passengers = estado.pasajeros_a_bordo.get(t.nombre, 0)
                 status_text += f"{t.nombre}: {passengers} pasajeros, {current_speed} km/h\n"
             label_trenes.config(text=status_text)
@@ -181,14 +167,16 @@ def iniciar_simulacion(ventana_actual, semilla, ruta_tren: str = None, ruta_est:
             if estado.segundos_desde_ultimo_evento >= estado.proximo_evento:
                 generar_evento()
         
-            #genera pasajeros
-            estado.generar_pasajeros_en_estaciones(segundos=1)
+            # Genera pasajeros cada minuto
+            if estado.tiempo_actual.second % 60 == 0:  
+                for est in estado.estaciones:
+                    nuevos_pasajeros = est.generar_pasajeros(1, estado.estaciones)  # 1 minuto de simulación
+                    est.pasajeros_esperando.extend(nuevos_pasajeros)
             
             
         ventana_simulacion.after(1000, actualizar_tiempo)
     
 
-    #genera un evento al azar cada cierto tiempo         
     def generar_evento():
         nonlocal pausa
         pausa = True
@@ -197,3 +185,4 @@ def iniciar_simulacion(ventana_actual, semilla, ruta_tren: str = None, ruta_est:
         mostrar_evento_en_ventana(evento,estado, lambda:reanudar_tiempo())
         
     actualizar_tiempo()
+

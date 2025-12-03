@@ -39,6 +39,11 @@ class EstadoSimulacion:
         #parametros objetos (allow custom paths for simulation runs)
         self.trenes = cargar_objetos(ruta_tren, tren)
         self.estaciones = cargar_objetos(ruta_est, estacion)
+        # Inicializar velocidad_actual para nuevas simulaciones
+        for t in self.trenes:
+            # Si el tren parte sin velocidad definida, usar su velocidad máxima
+            if getattr(t, "velocidad_actual", 0) == 0:
+                t.velocidad_actual = t.velocidad_max
         
         #parametros tiempo
         self.proximo_evento= 60*random.randint(1, 30)  #genera un evento al "azar"(solo tenemos 1 evento) entre 1 y 30 minutos
@@ -110,36 +115,30 @@ class EstadoSimulacion:
 
     ##########guardar simulacion##########      
     def guardar_simulacion(self, nombre_guardado: str, carpeta="guardado"):
-        """
-        Guarda el estado completo de la simulación en un archivo JSON
-        dentro de la carpeta indicada (por defecto 'guardado').
-        """
-
-        # Carpeta 'guardado' en la raíz del proyecto
+        import os, json
         base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         carpeta_completa = os.path.join(base_dir, carpeta)
         os.makedirs(carpeta_completa, exist_ok=True)
 
-        # --- Trenes serializables ---
+        # --- trenes ---
         datos_trenes = []
         for t in self.trenes:
             datos_trenes.append({
                 "nombre": t.nombre,
-                "velocidad_max": getattr(t, "velocidad_max", None),
-                "velocidad_actual": getattr(t, "velocidad", getattr(t, "velocidad_max", None)),
-                "capacidad": t.capacidad() if hasattr(t, "capacidad") else None,
-                "pasajeros": self.pasajeros_a_bordo.get(t.nombre, 0),
+                "velocidad_max": t.velocidad_max,
+                "velocidad_actual": t.velocidad_actual,   # 👈 CLAVE
+                "capacidad": t.capacidad(),
+                "pasajeros": t.pasajeros_a_bordo,
             })
 
-        # --- Estaciones serializables ---
+        # --- estaciones ---
         datos_estaciones = []
         for e in self.estaciones:
             datos_estaciones.append({
                 "nombre": e.nombre,
-                "poblacion": getattr(e, "poblacion", None),
+                "poblacion": e.poblacion,
             })
 
-        # --- Estructura general del guardado ---
         datos = {
             "tiempo_actual": self.tiempo_actual.strftime("%Y-%m-%d %H:%M:%S"),
             "historial_eventos": self.historial_eventos,
@@ -152,3 +151,49 @@ class EstadoSimulacion:
         ruta_archivo = os.path.join(carpeta_completa, f"{nombre_guardado}.json")
         with open(ruta_archivo, "w", encoding="utf-8") as f:
             json.dump(datos, f, ensure_ascii=False, indent=4)
+
+    @classmethod
+    def cargar_desde_archivo(cls, ruta_archivo: str):
+        with open(ruta_archivo, "r", encoding="utf-8") as f:
+            datos = json.load(f)
+
+        fecha_str = datos.get("tiempo_actual", fecha_base)
+        estado = cls(
+            fecha_inicio_str=fecha_str,
+            ruta_tren=trenD,
+            ruta_est=estD,
+            semilla=random.randint(0, 10000),
+        )
+
+        estado.historial_eventos = datos.get("historial_eventos", [])
+        estado.historial_elecciones = datos.get("historial_elecciones", [])
+        estado.pasajeros_a_bordo = datos.get("pasajeros_a_bordo", {})
+
+        trenes_guardados = {t["nombre"]: t for t in datos.get("trenes", [])}
+        for t in estado.trenes:
+            info = trenes_guardados.get(t.nombre)
+            if not info:
+                continue
+
+            t.velocidad_max = info.get("velocidad_max", t.velocidad_max)
+            vel_actual = info.get("velocidad_actual")
+            if vel_actual is not None:
+                t.velocidad_actual = vel_actual
+            else:
+                t.velocidad_actual = t.velocidad_max
+
+            pasajeros = info.get("pasajeros")
+            if pasajeros is not None:
+                t.pasajeros_a_bordo = pasajeros
+                estado.pasajeros_a_bordo[t.nombre] = pasajeros
+            else:
+                t.pasajeros_a_bordo = estado.pasajeros_a_bordo.get(t.nombre, 0)
+
+        est_guardadas = {e["nombre"]: e for e in datos.get("estaciones", [])}
+        for e in estado.estaciones:
+            info = est_guardadas.get(e.nombre)
+            if not info:
+                continue
+            e.poblacion = info.get("poblacion", e.poblacion)
+
+        return estado
