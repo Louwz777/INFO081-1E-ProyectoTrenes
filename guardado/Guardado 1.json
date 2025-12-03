@@ -1,0 +1,49 @@
+{
+    "tiempo_actual": "2015-01-01 07:30:23",
+    "historial_eventos": [
+        "Niebla densa",
+        "Niebla densa"
+    ],
+    "historial_elecciones": [
+        "hacer que el tren vaya a menor velocidad.",
+        "Hacer que el tren espere hasta que la niebla se disipe."
+    ],
+    "pasajeros_a_bordo": {
+        "Tren BMU": 0,
+        "Tren EMU": 0
+    },
+    "trenes": [
+        {
+            "nombre": "Tren BMU",
+            "velocidad_max": 160,
+            "velocidad_actual": 80.0,
+            "capacidad": 236,
+            "pasajeros": 0
+        },
+        {
+            "nombre": "Tren EMU",
+            "velocidad_max": 120,
+            "velocidad_actual": 120,
+            "capacidad": 300,
+            "pasajeros": 0
+        }
+    ],
+    "estaciones": [
+        {
+            "nombre": "Estación Central (Santiago)",
+            "poblacion": 8422459
+        },
+        {
+            "nombre": "Rancagua",
+            "poblacion": 274407
+        },
+        {
+            "nombre": "Talca",
+            "poblacion": 242344
+        },
+        {
+            "nombre": "Chillán",
+            "poblacion": 204091
+        }
+    ]
+}

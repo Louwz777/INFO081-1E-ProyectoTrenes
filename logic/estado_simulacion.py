@@ -1,6 +1,7 @@
 """
 Módulo para el manejo del estado de la simulación.
 """
+import os
 from datetime import datetime, timedelta, time
 from modelos.clases import *
 from logic.sistema_eventos.eventos import *
@@ -94,4 +95,48 @@ class EstadoSimulacion:
     def __str__(self):
         hora, fecha = self.actualizar_display()
         return f"EstadoSimulacion(hora_actual={hora}, fecha={fecha})"
-        
+
+    ##########guardar simulacion##########      
+    def guardar_simulacion(self, nombre_guardado: str, carpeta="guardado"):
+        """
+        Guarda el estado completo de la simulación en un archivo JSON
+        dentro de la carpeta indicada (por defecto 'guardado').
+        """
+
+        # Carpeta 'guardado' en la raíz del proyecto
+        base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        carpeta_completa = os.path.join(base_dir, carpeta)
+        os.makedirs(carpeta_completa, exist_ok=True)
+
+        # --- Trenes serializables ---
+        datos_trenes = []
+        for t in self.trenes:
+            datos_trenes.append({
+                "nombre": t.nombre,
+                "velocidad_max": getattr(t, "velocidad_max", None),
+                "velocidad_actual": getattr(t, "velocidad", getattr(t, "velocidad_max", None)),
+                "capacidad": t.capacidad() if hasattr(t, "capacidad") else None,
+                "pasajeros": self.pasajeros_a_bordo.get(t.nombre, 0),
+            })
+
+        # --- Estaciones serializables ---
+        datos_estaciones = []
+        for e in self.estaciones:
+            datos_estaciones.append({
+                "nombre": e.nombre,
+                "poblacion": getattr(e, "poblacion", None),
+            })
+
+        # --- Estructura general del guardado ---
+        datos = {
+            "tiempo_actual": self.tiempo_actual.strftime("%Y-%m-%d %H:%M:%S"),
+            "historial_eventos": self.historial_eventos,
+            "historial_elecciones": self.historial_elecciones,
+            "pasajeros_a_bordo": self.pasajeros_a_bordo,
+            "trenes": datos_trenes,
+            "estaciones": datos_estaciones,
+        }
+
+        ruta_archivo = os.path.join(carpeta_completa, f"{nombre_guardado}.json")
+        with open(ruta_archivo, "w", encoding="utf-8") as f:
+            json.dump(datos, f, ensure_ascii=False, indent=4)

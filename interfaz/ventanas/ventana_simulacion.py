@@ -2,6 +2,7 @@ import tkinter as tk
 import tkinter.font as tkfont
 from logic.sistema_eventos.eventos import *
 from logic.estado_simulacion import EstadoSimulacion
+from tkinter import messagebox, simpledialog
 import random
 
 
@@ -27,10 +28,47 @@ def iniciar_simulacion(ventana_actual, semilla, ruta_tren: str = None, ruta_est:
     
     # Muestra de nuevo la ventana principal
     def volver_menu():
+        # Pregunta al usuario
+        respuesta = messagebox.askyesnocancel(
+            "Volver al menú principal",
+            "¿Quieres guardar tu simulación antes de volver al menú principal?"
+        )
+        # Cancelar → no hacer nada, se queda en la simulación
+        if respuesta is None:
+            return
+
+        # Sí → pedir nombre y guardar
+        if respuesta:
+            nombre = simpledialog.askstring(
+                "Guardar simulación",
+                "Escribe un nombre para tu guardado:"
+            )
+            if nombre:
+                try:
+                    estado.guardar_simulacion(nombre)
+                    messagebox.showinfo(
+                        "Guardado exitoso",
+                        f"Tu simulación se ha guardado como '{nombre}'."
+                    )
+                except Exception as e:
+                    messagebox.showerror(
+                        "Error al guardar",
+                        f"No se pudo guardar la simulación:\n{e}"
+                    )
+                    # Si falló el guardado, mejor quedarse en la simulación
+                    return
+
+        # Guardar siempre el historial básico también, como antes
+        try:
+            estado.guardar_historial()
+        except Exception:
+            # Si falla, no bloqueamos volver al menú
+            pass
+
+        # Cerrar simulación y volver al menú principal
         ventana_simulacion.destroy()
         ventana_actual.deiconify()
         ventana_actual.state('zoomed')
-        estado.guardar_historial()
 
     boton_volver = tk.Button(
         ventana_simulacion,

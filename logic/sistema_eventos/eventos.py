@@ -117,9 +117,10 @@ def crear_evento_niebla(estado:Callable[[Any], Any] = None)->Evento:
     )
     
     #FALTA IMPLEMENTAR EFECTO DE ESPERAR
-    efecto_esperar= lambda s: (
-        f"El tren {tren.nombre} va a esperar hasta que la niebla se disipe."  
-    )    
+    efecto_esperar = lambda s: (
+    estado.avanzar_tiempo(1800),  # avanza 30 minutos
+    f"El tren {tren.nombre} ha esperado 30 minutos hasta que la niebla se disipó."
+    )[1]  
     
 
     descripcion_evento = f"Hay una densa niebla que afecta al tren {tren.nombre}. ¿Qué deseas hacer?"
