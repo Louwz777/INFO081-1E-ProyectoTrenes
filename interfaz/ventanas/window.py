@@ -85,10 +85,43 @@ def ventana_principal():
     entrada_semilla = tk.Entry(menu_semilla, font=btn_font, bg="white", fg="black")
     entrada_semilla.pack(pady=(4, 8), padx=12, fill=tk.BOTH, expand=True)
 
+    def seleccionar_modo_inicio(parent, entrada_semilla):
+        """Open a modal asking the user to choose default or custom data files for the run."""
+        dlg = tk.Toplevel(parent)
+        dlg.title("Modo de inicio")
+        dlg.geometry("420x160")
+        dlg.transient(parent)
+        dlg.configure(bg=config.COLOR_BLANCO)
+        dlg.grab_set()
+
+        lbl = tk.Label(dlg, text="Seleccione modo de inicio:", font=("Arial", 12, "bold"), bg=config.COLOR_BLANCO)
+        lbl.pack(pady=(16,8))
+
+        frame = tk.Frame(dlg, bg=config.COLOR_BLANCO)
+        frame.pack(pady=8)
+
+        def inicio_default():
+            ruta_tr = os.path.join(ruta_raiz, "modelos", "trenes_default.json")
+            ruta_es = os.path.join(ruta_raiz, "modelos", "estaciones_default.json")
+            dlg.destroy()
+            iniciar_simulacion(parent, entrada_semilla, ruta_trenes=ruta_tr, ruta_estaciones=ruta_es)
+
+        def inicio_personalizado():
+            ruta_tr = os.path.join(ruta_raiz, "modelos", "trenes.json")
+            ruta_es = os.path.join(ruta_raiz, "modelos", "estaciones.json")
+            dlg.destroy()
+            iniciar_simulacion(parent, entrada_semilla, ruta_trenes=ruta_tr, ruta_estaciones=ruta_es)
+
+        btn_default = tk.Button(frame, text="Inicio por defecto", command=inicio_default, bg=config.COLOR_AZUL, fg=config.COLOR_BLANCO, width=16, cursor="hand2")
+        btn_default.pack(side=tk.LEFT, padx=12)
+
+        btn_personal = tk.Button(frame, text="Inicio personalizado", command=inicio_personalizado, bg=config.COLOR_VERDE, fg=config.COLOR_BLANCO, width=16, cursor="hand2")
+        btn_personal.pack(side=tk.LEFT, padx=12)
+
     boton = tk.Button(
         ventana,
         text="INICIAR SIMULACIÓN",
-        command=lambda: iniciar_simulacion(ventana, entrada_semilla),
+        command=lambda: seleccionar_modo_inicio(ventana, entrada_semilla),
         bg=config.COLOR_BLANCO,
         fg=config.COLOR_GRIS,
         font=btn_font,

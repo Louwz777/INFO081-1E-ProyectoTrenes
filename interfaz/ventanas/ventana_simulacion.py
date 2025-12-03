@@ -5,9 +5,11 @@ from logic.estado_simulacion import EstadoSimulacion
 import random
 
 
-def iniciar_simulacion(ventana_actual,semilla):
-    """Abre una nueva ventana de simulación y oculta la principal."""
-    ventana_actual.withdraw()  
+def iniciar_simulacion(ventana_actual, semilla, ruta_trenes: str = None, ruta_estaciones: str = None):
+    """Abre una nueva ventana de simulación y oculta la principal.
+    ruta_trenes / ruta_estaciones: optional paths to JSON files to load for this run.
+    """
+    ventana_actual.withdraw()
 
     ventana_simulacion = tk.Toplevel()
     ventana_simulacion.title("Simulación en curso")
@@ -15,10 +17,13 @@ def iniciar_simulacion(ventana_actual,semilla):
     ventana_simulacion.configure(bg="#e8e8e8")
     
     # Inicializa el estado de la simulación
-    #si semilla no es un numero, se genera una aleatoria
+    # si semilla no es un numero, se genera una aleatoria
     valor = semilla.get().strip()
-    semilla =int(valor) if valor.isdigit() else random.randint(0,10000)
-    estado=EstadoSimulacion(semilla=int(semilla))
+    semilla_val = int(valor) if valor.isdigit() else random.randint(0,10000)
+    # Use provided files if given, otherwise default to original files
+    ruta_tr = ruta_trenes if ruta_trenes is not None else "modelos/trenes.json"
+    ruta_es = ruta_estaciones if ruta_estaciones is not None else "modelos/estaciones.json"
+    estado = EstadoSimulacion(semilla=semilla_val, ruta_trenes=ruta_tr, ruta_estaciones=ruta_es)
     
     # Muestra de nuevo la ventana principal
     def volver_menu():
@@ -95,8 +100,24 @@ def iniciar_simulacion(ventana_actual,semilla):
         nonlocal pausa
         pausa = True
 
-        evento = crear_evento_niebla(estado)
-        mostrar_evento_en_ventana(evento,aplicar_opcion)
+        # choose between available event creators
+        creators = [crear_evento_niebla]
+        if 'crear_evento_abordaje' in globals() or hasattr(__import__('logic.sistema_eventos.eventos', fromlist=['*']), 'crear_evento_abordaje'):
+            try:
+                from logic.sistema_eventos.eventos import crear_evento_abordaje
+                creators.append(crear_evento_abordaje)
+            except Exception:
+                pass
+
+        creator = random.choice(creators)
+        evento = creator(estado)
+        # use the generic window for events
+        try:
+            from logic.sistema_eventos.eventos import mostrar_evento_en_ventana
+            mostrar_evento_en_ventana(evento, aplicar_opcion)
+        except Exception:
+            # fallback: apply directly
+            aplicar_opcion(evento.opcion1)
     
 
               
