@@ -126,7 +126,7 @@ La interfaz gráfica está desarrollada con **Tkinter** con soporte para redimen
 ```powershell
 pip install pandas pillow pyarrow
 
-    Linux/deb. based
+    # en Linux/deb. based
 sudo apt install python3 pip
 python3 -m pip install Pillow pandas pyarrow
 ```
