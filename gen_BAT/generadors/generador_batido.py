@@ -13,7 +13,17 @@ class GeneradorBatido(Generador):
     Fuera de estos intervalos, no se generan clientes.
     """
 
-    INTERVALO_BATIDA = 15  # minutos
+    import json
+    import os
+
+    # Load config
+    try:
+        config_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'config.json')
+        with open(config_path, 'r') as f:
+            config = json.load(f)
+        INTERVALO_BATIDA = config.get("intervalo_batida", 15)
+    except Exception:
+        INTERVALO_BATIDA = 15
 
     def generar_clientes(
         self,

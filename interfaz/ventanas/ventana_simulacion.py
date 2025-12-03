@@ -43,8 +43,6 @@ def iniciar_simulacion(ventana_actual, semilla, ruta_trenes: str = None, ruta_es
 
     boton_volver.pack(side=tk.BOTTOM, pady=10)
     
-
-    
     label_reloj = tk.Label(
         ventana_simulacion,
         text="",
@@ -53,6 +51,16 @@ def iniciar_simulacion(ventana_actual, semilla, ruta_trenes: str = None, ruta_es
         fg="#0066cc"
     )
     label_reloj.place(x=10, y=10)
+    
+    label_trenes = tk.Label(
+        ventana_simulacion,
+        text="",
+        font=("Arial", 12),
+        bg="#e8e8e8",
+        fg="black",
+        justify=tk.LEFT
+    )
+    label_trenes.place(x=10, y=60)
     
     label_eventos = tk.Label(
         ventana_simulacion,
@@ -87,6 +95,16 @@ def iniciar_simulacion(ventana_actual, semilla, ruta_trenes: str = None, ruta_es
                 label_reloj.config(text=f"Hora: {hora}   Fecha: {fecha}   - {primera_linea}")
             else:
                 label_reloj.config(text=f"Hora: {hora}   Fecha: {fecha}")
+            
+            # Actualizar estado de los trenes
+            status_text = "Estado Trenes:\n"
+            for t in estado.trenes:
+                # Usar velocidad si fue modificada por evento, sino velocidad_max
+                current_speed = getattr(t, 'velocidad', t.velocidad_max)
+                passengers = estado.pasajeros_a_bordo.get(t.nombre, 0)
+                status_text += f"{t.nombre}: {passengers} pasajeros, {current_speed} km/h\n"
+            label_trenes.config(text=status_text)
+            
             estado.avanzar_tiempo(segundos=1)
         ventana_simulacion.after(1000, actualizar_tiempo)
     
