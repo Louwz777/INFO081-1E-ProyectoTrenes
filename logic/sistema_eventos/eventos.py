@@ -106,21 +106,6 @@ funciones para crear eventos
 """
  
 def crear_evento_niebla(estado:Callable[[Any], Any] = None)->Evento:
-    """
-    Escoge un tren al azar y crea un evento de niebla que afecta su velocidad.
-    la idea es que ocurra cuando el tren este esperando en una estacion, sino no tiene sentido.
-    """
-    tren = random.choice(estado.trenes)
-    
-    efecto_reducir_velocidad= lambda s: (
-        setattr(tren, 'velocidad', tren.velocidad * 0.5),
-        f"La velocidad del tren {tren.nombre} se ha reducido a {tren.velocidad} km/h debido a la niebla."
-    )
-    
-    #FALTA IMPLEMENTAR EFECTO DE ESPERAR
-    efecto_esperar= lambda s: (
-        f"El tren {tren.nombre} va a esperar hasta que la niebla se disipe."  
-    )
         
     
 

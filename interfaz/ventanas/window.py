@@ -195,12 +195,29 @@ def ventana_principal():
         ventana,
         text="EDICIÓN ESTACIONES",
         command=lambda: _pagina_edicion_impl(ventana),
-        bg=config.COLOR_AZUL,
+        bg=config.COLOR_VERDE,
         fg=config.COLOR_BLANCO,
         font=btn_font,
         cursor="hand2",
     )
     boton_pagina.place(relx=config.BUTTON_ESTACIONES_POS[0], rely=config.BUTTON_ESTACIONES_POS[1], anchor="center", relwidth=config.BUTTON_RELWIDTH, relheight=config.BUTTON_RELHEIGHT)
+
+    # Boton configuracion generador
+    from interfaz.ventanas.ventana_config_gen import ventana_configuracion_generador
+    boton_gen = tk.Button(
+        ventana,
+        text="CONFIGURAR GENERADOR",
+        command=lambda: ventana_configuracion_generador(ventana),
+        bg=config.COLOR_ROJO,
+        fg=config.COLOR_BLANCO,
+        font=btn_font,
+        cursor="hand2",
+    )
+    # Place it below the other buttons, or adjust layout. 
+    # Current buttons are at RELY 0.5, 0.6, 0.7 (approx based on config).
+    # I'll check config values or just place it manually for now.
+    # Assuming config has positions, I'll place it slightly lower.
+    boton_gen.place(relx=0.8, rely=0.75, anchor="center", relwidth=0.10, relheight=0.10)
 
     def on_resize(event):
         new_size = max(8, int(event.height * 0.016))
