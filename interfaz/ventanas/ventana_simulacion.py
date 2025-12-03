@@ -84,20 +84,15 @@ def iniciar_simulacion(ventana_actual, semilla, ruta_trenes: str = None, ruta_es
     
     #funcion para actualizar tiempo, cada 1000ms se llama denuevo a si misma, actualizando el texto
     def actualizar_tiempo():
-        # Update clock display every second. If there's an active event message
-        # show a short version of it alongside the hour (e.g. "Niebla densa").
+ 
         if not pausa:
             hora, fecha = estado.actualizar_display()
-            # get first line of event text (if any) to keep clock concise
-            evento_text = label_eventos.cget('text') or ""
-            if evento_text:
-                primera_linea = evento_text.splitlines()[0]
-                label_reloj.config(text=f"Hora: {hora}   Fecha: {fecha}   - {primera_linea}")
-            else:
-                label_reloj.config(text=f"Hora: {hora}   Fecha: {fecha}")
+ 
+            label_reloj.config(text=f"Hora: {hora}   Fecha: {fecha}")
             
             # Actualizar estado de los trenes
             status_text = "Estado Trenes:\n"
+            
             for t in estado.trenes:
                 # Usar velocidad si fue modificada por evento, sino velocidad_max
                 current_speed = getattr(t, 'velocidad', t.velocidad_max)
