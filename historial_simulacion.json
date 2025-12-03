@@ -1,10 +1,4 @@
 {
-    "eventos": [
-        "Niebla densa",
-        "Niebla densa"
-    ],
-    "elecciones": [
-        "Hacer que el tren espere hasta que la niebla se disipe.",
-        "hacer que el tren vaya a menor velocidad."
-    ]
+    "eventos": [],
+    "elecciones": []
 }

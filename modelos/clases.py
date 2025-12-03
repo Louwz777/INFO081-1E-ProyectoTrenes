@@ -4,6 +4,7 @@
 import json;
 import os;
 import pandas as pd;
+from gen_BAT import *
 
 ##crea una variable con la ruta de la carpeta datos
 
@@ -11,11 +12,14 @@ import pandas as pd;
 class tren:
     ## ppv= pasajeros por vagon
     ## ccv= cantidad de vagones
-    def __init__(self,nombre:str,velocidad:int,ppv:int,ccv:int):
+    def __init__(self,nombre:str,velocidad_max:int,ppv:int,ccv:int,situacion:str="espera"):
         self.nombre = nombre
-        self.velocidad = velocidad
+        self.velocidad_max = velocidad_max
         self.ppv = ppv
         self.ccv = ccv
+        self.situacion = situacion
+        self.pasajeros_a_bordo = 0
+        self.velocidad_actual= 0
     
     def capacidad(self):
         return self.ccv*self.ppv
@@ -39,6 +43,7 @@ class pasajero:
     def convertir_dicc(self):
         return {
             "id": self.id,
+            "creacion": self.creacion,
             "inicio": self.inicio,
             "destino": self.destino,
             "retorno": self.retorno
@@ -46,17 +51,21 @@ class pasajero:
         
 class estacion:
 
-    def __init__(self,nombre:str,poblacion:int,lineas:list,rutas:list=[],rutas_rotacion:int=0):
+    def __init__(self,nombre:str,poblacion:int,lineas:list,rutas:list=[],rutas_rotacion:int=0,generador:Generador = GeneradorBatido):
         self.nombre = nombre
         self.poblacion = poblacion
         self.lineas = lineas 
+        self.rutas = rutas
+        self.rutas_rotacion = rutas_rotacion
+        self.pasajeros_esperando = []  # Lista para almacenar pasajeros que esperan en la estación
 
     def convertir_dicc(self):
         return {
             "nombre": self.nombre,
             "poblacion": self.poblacion,
             "lineas": self.lineas,
-            "rutas": self.rutas
+            "rutas": self.rutas,
+            "rutas_rotacion": self.rutas_rotacion
             }
 
 
