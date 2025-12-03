@@ -15,48 +15,6 @@ La interfaz gráfica está desarrollada con **Tkinter** con soporte para redimen
 - Lukas Álvarez Jaramillo (Insaidaaa)
 - Tomás Fabián Torres Quezada (BattleBeast1)
 
----
-
-## Estructura del Proyecto
-
-```
-INFO081-1E-ProyectoTrenes/
-├── chuchu.Py                    # Punto de entrada principal
-├── interfaz/                    # Interfaz gráfica (Tkinter)
-│   ├── settings.py              # Configuración de colores y dimensiones
-│   ├── images/                  # Recursos gráficos (bg.png)
-│   └── ventanas/
-│       ├── window.py            # Ventana principal del menú
-│       ├── ventana_simulacion.py # Ventana de simulación activa
-│       ├── pages.py             # Páginas de edición (trenes/estaciones)
-│       └── common.py            # Utilidades compartidas
-├── logic/                       # Lógica de simulación
-│   ├── estado_simulacion.py    # EstadoSimulacion (reloj, historial, objetos cargados)
-│   └── sistema_eventos/
-│       └── eventos.py           # Eventos aleatorios (niebla, etc.) y opciones
-├── modelos/                     # Persistencia de datos
-│   ├── clases.py                # Clases: tren, pasajero, estacion + funciones de carga/guardado
-│   ├── trenes.json              # Configuración personalizada de trenes
-│   ├── trenes_default.json      # Trenes por defecto
-│   ├── estaciones.json          # Configuración personalizada de estaciones
-│   └── estaciones_default.json  # Estaciones por defecto
-├── ppdc-event-manager/          # Submódulo: gestor de líneas de eventos
-│   └── ppdc_event_manager/
-│       ├── linea_de_eventos.py  # Cola de eventos con prioridad
-│       └── eventos/
-│           ├── eventos.py       # Clase base Evento
-│           └── tipos_evento.py  # Tipos específicos de eventos
-├── ppdc-timed-generator/        # Submódulo: generadores temporizados
-│   └── ppdc_timed_generator/
-│       ├── generador.py         # Clase base Generador
-│       └── generadores/
-│           └── generador_uniforme.py # Generador uniforme de eventos
-├── gen_BAT/                     # Generadores auxiliares (batido)
-└── historial_simulacion.json    # Historial de eventos y elecciones del usuario
-```
-
----
-
 ## Componentes Principales
 
 ### 1. Interfaz (`interfaz/`)
