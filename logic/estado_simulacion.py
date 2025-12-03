@@ -3,14 +3,16 @@ Módulo para el manejo del estado de la simulación.
 """
 from datetime import datetime, timedelta, time
 from modelos.clases import *
-from logic.sistema_eventos.eventos import crear_evento_niebla
+from logic.sistema_eventos.eventos import *
 import random
 import json
-
+fecha_base="2015-01-01 07:00:00"
+trenD="modelos/trenes.json"
+estD="modelos/estaciones.json"
 
 class EstadoSimulacion:
 
-    def __init__(self, fecha_inicio_str="2015-01-01 07:00:00", semilla=random.randint(0,10000), ruta_trenes: str = "modelos/trenes.json", ruta_estaciones: str = "modelos/estaciones.json"):
+    def __init__(self, fecha_inicio_str=fecha_base,ruta_tren="trenD",ruta_est="estD", semilla=random.randint(0,10000)):
         """
         Inicializa el estado de la simulación con la hora actual y la semilla para eventos aleatorios.
         
@@ -34,10 +36,13 @@ class EstadoSimulacion:
         self.historial_elecciones = []
         
         #parametros objetos (allow custom paths for simulation runs)
-        self.trenes = cargar_objetos(ruta_trenes, tren)
-        self.estaciones = cargar_objetos(ruta_estaciones, estacion)
+        self.trenes = cargar_objetos(ruta_tren, tren)
+        self.estaciones = cargar_objetos(ruta_est, estacion)
         
-        #parametros extra
+        #parametros tiempo
+        self.proximo_evento= random.randint(0, 15)  #segundos hasta el proximo evento
+        self.segundos_desde_ultimo_evento = 0
+        
         #Mantiene un registro de cuantos pasajeros hay en cada tren
         #inicializa en 0 para cada tren
         try:

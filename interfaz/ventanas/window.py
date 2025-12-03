@@ -145,7 +145,7 @@ def ventana_principal():
 
             def confirmar():
                 conf.destroy()
-                iniciar_simulacion(parent, entrada_semilla, ruta_trenes=ruta_tr, ruta_estaciones=ruta_es)
+                iniciar_simulacion(parent, entrada_semilla, ruta_tren=ruta_tr, ruta_est=ruta_es)
 
             def cancelar():
                 conf.destroy()

@@ -5,7 +5,7 @@ from logic.estado_simulacion import EstadoSimulacion
 import random
 
 
-def iniciar_simulacion(ventana_actual, semilla, ruta_trenes: str = None, ruta_estaciones: str = None):
+def iniciar_simulacion(ventana_actual, semilla, ruta_tren: str = None, ruta_est: str = None):
     """Abre una nueva ventana de simulación y oculta la principal.
     ruta_trenes / ruta_estaciones: optional paths to JSON files to load for this run.
     """
@@ -21,9 +21,9 @@ def iniciar_simulacion(ventana_actual, semilla, ruta_trenes: str = None, ruta_es
     valor = semilla.get().strip()
     semilla_val = int(valor) if valor.isdigit() else random.randint(0,10000)
     # Use provided files if given, otherwise default to original files
-    ruta_tr = ruta_trenes if ruta_trenes is not None else "modelos/trenes.json"
-    ruta_es = ruta_estaciones if ruta_estaciones is not None else "modelos/estaciones.json"
-    estado = EstadoSimulacion(semilla=semilla_val, ruta_trenes=ruta_tr, ruta_estaciones=ruta_es)
+    ruta_tr = ruta_tren if ruta_tren is not None else "modelos/trenes.json"
+    ruta_es = ruta_est if ruta_est is not None else "modelos/estaciones.json"
+    estado = EstadoSimulacion(semilla=semilla_val, ruta_tren=ruta_tr, ruta_est=ruta_es)
     
     # Muestra de nuevo la ventana principal
     def volver_menu():
@@ -78,7 +78,8 @@ def iniciar_simulacion(ventana_actual, semilla, ruta_trenes: str = None, ruta_es
     def reanudar_tiempo():
         nonlocal pausa
         pausa = False
-        ventana_simulacion.after(random.randint(5, 15) * 1000, generar_evento)
+        estado.segundos_desde_ultimo_evento = 0
+        estado.proximo_evento = random.randint(5, 15)
         
     pausa = False
     
@@ -101,16 +102,14 @@ def iniciar_simulacion(ventana_actual, semilla, ruta_trenes: str = None, ruta_es
             label_trenes.config(text=status_text)
             
             estado.avanzar_tiempo(segundos=1)
+            estado.segundos_desde_ultimo_evento += 1
+            
+            if estado.segundos_desde_ultimo_evento >= estado.proximo_evento:
+                generar_evento()
+
+            
         ventana_simulacion.after(1000, actualizar_tiempo)
     
-
-    def aplicar_opcion(op):
-        resultado = op.efecto(estado)
-        label_eventos.config(text=str(resultado))
-        nonlocal pausa
-        pausa = False
-        tiempo_siguiente = random.randint(5, 15) * 1000  
-        ventana_simulacion.after(tiempo_siguiente, generar_evento) 
 
     #genera un evento al azar cada cierto tiempo         
     def generar_evento():
@@ -124,4 +123,3 @@ def iniciar_simulacion(ventana_actual, semilla, ruta_trenes: str = None, ruta_es
               
 
     actualizar_tiempo()
-    ventana_simulacion.after(random.randint(5, 15) * 1000,generar_evento)
