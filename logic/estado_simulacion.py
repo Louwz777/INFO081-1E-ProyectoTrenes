@@ -38,8 +38,8 @@ class EstadoSimulacion:
         self.estaciones = cargar_objetos(ruta_estaciones, estacion)
         
         #parametros extra
-        # Track number of passengers currently on board per train
-        # initialize to 0 for every loaded train
+        #Mantiene un registro de cuantos pasajeros hay en cada tren
+        #inicializa en 0 para cada tren
         try:
             self.pasajeros_a_bordo = {t.nombre: 0 for t in self.trenes}
         except Exception:

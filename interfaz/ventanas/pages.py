@@ -191,7 +191,7 @@ def abrir_editor_estacion(parent):
 
     data = leer_dict()
 
-    # Hide the parent page while the editor is open to avoid multiple open windows
+    #Esconde la ventana principal
     try:
         parent.withdraw()
     except Exception:
@@ -276,7 +276,7 @@ def abrir_editor_estacion(parent):
 
         # Revisar si el nuevo nombre ya existe (y no es el mismo que el antiguo)
         data_local = leer_dict()
-        # Preserve existing routes for this station (if any)
+        # Preserva las rutas existentes
         prev_rutas = {}
         if old in data_local:
             prev_rutas = data_local.get(old, {}).get('rutas', {})
@@ -469,7 +469,7 @@ def editar_rutas(ventana_actual):
     dist_vars = {}
 
     def on_select(evt):
-        # clear previous widgets
+        #limpiar widgets anteriores
         for w in current_widgets:
             w.destroy()
         current_widgets.clear()
@@ -488,10 +488,9 @@ def editar_rutas(ventana_actual):
         for i, linea in enumerate(lineas):
             lbl = tk.Label(area_rutas, text=f"{linea} →", bg=config.COLOR_GRIS, fg=config.COLOR_BLANCO)
             lbl.grid(row=i, column=0, sticky="w", padx=6, pady=4)
-            # destination selector
+            #seleccionar estacion
             var = tk.StringVar(pagina)
             prev = rutas.get(linea, "")
-            # support old format where rutas[linea] might be a string
             if isinstance(prev, dict):
                 dest_prev = prev.get('dest', '')
                 dist_prev = prev.get('dist_km', '')
@@ -502,7 +501,7 @@ def editar_rutas(ventana_actual):
             opt = tk.OptionMenu(area_rutas, var, *estaciones_opciones)
             opt.config(bg=config.COLOR_BLANCO, fg=config.COLOR_NEGRO)
             opt.grid(row=i, column=1, sticky="w", padx=6, pady=4)
-            # distance entry
+            #entrada de distancia
             dvar = tk.StringVar(pagina)
             dvar.set(str(dist_prev))
             dist_entry = tk.Entry(area_rutas, textvariable=dvar, width=8)
@@ -514,7 +513,7 @@ def editar_rutas(ventana_actual):
             dist_vars[linea] = dvar
 
     def editar_lineas_local():
-        # Edit comma-separated lines for selected station
+        # Editar lineas para estacion seleccionada
         sel = listbox.curselection()
         if not sel:
             messagebox.showwarning("Editar Líneas", "Seleccione una estación primero")
@@ -528,7 +527,7 @@ def editar_rutas(ventana_actual):
         if res is None:
             return
         new_lineas = [l.strip() for l in res.split(',') if l.strip()]
-        # preserve rutas for lines that still exist
+        #preserva rutas para lineas que siguen existiendo
         old_rutas = entry.get('rutas', {}) or {}
         new_rutas = {l: old_rutas.get(l, '') for l in new_lineas if old_rutas.get(l)}
         entry['lineas'] = new_lineas
@@ -537,13 +536,13 @@ def editar_rutas(ventana_actual):
         try:
             with open(archivo_estaciones, 'w', encoding='utf-8') as f:
                 json.dump(data_local, f, indent=4, ensure_ascii=False)
-            # refresh in-memory data and UI
+            #refresca datos en memoria y UI
             data.clear()
             data.update(data_local)
             listbox.delete(0, tk.END)
             for n in sorted(data.keys()):
                 listbox.insert(tk.END, n)
-            # re-select the same station and rebuild route widgets
+            #selecciona la misma estacion y reconstruye widgets de rutas
             idx = sorted(data.keys()).index(name)
             listbox.select_set(idx)
             listbox.event_generate('<<ListboxSelect>>')
@@ -561,18 +560,17 @@ def editar_rutas(ventana_actual):
         data_local = leer_dict()
         entry = data_local.get(name, {})
         rutas_new = {}
-        # validate distances
+        #valida distancias
         for linea, var in option_vars.items():
             dest = var.get().strip()
             dist_s = dist_vars.get(linea, tk.StringVar()).get().strip() if dist_vars.get(linea) else ""
             if not dest and not dist_s:
-                # nothing to save for this line
+                #no hay nada para guardar para esta linea
                 continue
-            # parse distance if provided
             dist_val = None
             if dist_s:
                 try:
-                    # allow decimals
+                    #permite decimales
                     dist_val = float(dist_s)
                 except Exception:
                     messagebox.showerror("Error", f"Distancia inválida para línea {linea}: '{dist_s}'")
@@ -698,7 +696,7 @@ def abrir_editor_tren(parent):
 
     data = leer_dict()
 
-    # Hide the parent page while the editor is open to avoid multiple open windows
+    #esconde la ventana principal
     try:
         parent.withdraw()
     except Exception:

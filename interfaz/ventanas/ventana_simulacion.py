@@ -40,7 +40,7 @@ def iniciar_simulacion(ventana_actual, semilla, ruta_trenes: str = None, ruta_es
         bg="white",
         fg="black"
     )
-    # Place the return button at the bottom so it is always visible
+    #Pone el boton de volver al menu principal en la parte inferior de la ventana
     boton_volver.pack(side=tk.BOTTOM, pady=10)
     
 
@@ -76,11 +76,11 @@ def iniciar_simulacion(ventana_actual, semilla, ruta_trenes: str = None, ruta_es
     
     #funcion para actualizar tiempo, cada 1000ms se llama denuevo a si misma, actualizando el texto
     def actualizar_tiempo():
-        # Update clock display every second. If there's an active event message
-        # show a short version of it alongside the hour (e.g. "Niebla densa").
+        # Se actualiza el reloj cada segundo
+        # Si hay un evento activo, se muestra una breve version del evento  
         if not pausa:
             hora, fecha = estado.actualizar_display()
-            # get first line of event text (if any) to keep clock concise
+            #obtiene el texto del label de eventos
             evento_text = label_eventos.cget('text') or ""
             if evento_text:
                 primera_linea = evento_text.splitlines()[0]
