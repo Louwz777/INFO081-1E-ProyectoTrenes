@@ -191,6 +191,12 @@ def abrir_editor_estacion(parent):
 
     data = leer_dict()
 
+    # Hide the parent page while the editor is open to avoid multiple open windows
+    try:
+        parent.withdraw()
+    except Exception:
+        pass
+
     editor = tk.Toplevel()
     editor.title("Editar Estación")
     editor.state('zoomed')
@@ -326,6 +332,11 @@ def abrir_editor_estacion(parent):
 
     def cerrar():
         editor.destroy()
+        try:
+            parent.deiconify()
+            parent.state('zoomed')
+        except Exception:
+            pass
 
     btn_close = tk.Button(right, text="Cerrar", command=cerrar, bg=config.COLOR_AZUL, fg=config.COLOR_BLANCO, cursor="hand2")
     btn_close.grid(row=5, column=0, columnspan=2, pady=10)
@@ -687,6 +698,12 @@ def abrir_editor_tren(parent):
 
     data = leer_dict()
 
+    # Hide the parent page while the editor is open to avoid multiple open windows
+    try:
+        parent.withdraw()
+    except Exception:
+        pass
+
     editor = tk.Toplevel()
     editor.title("Editar Tren")
     editor.state('zoomed')
@@ -821,6 +838,11 @@ def abrir_editor_tren(parent):
 
     def cerrar():
         editor.destroy()
+        try:
+            parent.deiconify()
+            parent.state('zoomed')
+        except Exception:
+            pass
 
     btn_close = tk.Button(right, text="SCerrar", command=cerrar, bg=config.COLOR_AZUL, fg=config.COLOR_BLANCO, cursor="hand2")
     btn_close.grid(row=6, column=0, columnspan=2, pady=10)

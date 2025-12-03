@@ -5,9 +5,11 @@ from logic.estado_simulacion import EstadoSimulacion
 import random
 
 
-def iniciar_simulacion(ventana_actual,semilla):
-    """Abre una nueva ventana de simulación y oculta la principal."""
-    ventana_actual.withdraw()  
+def iniciar_simulacion(ventana_actual, semilla, ruta_trenes: str = None, ruta_estaciones: str = None):
+    """Abre una nueva ventana de simulación y oculta la principal.
+    ruta_trenes / ruta_estaciones: optional paths to JSON files to load for this run.
+    """
+    ventana_actual.withdraw()
 
     ventana_simulacion = tk.Toplevel()
     ventana_simulacion.title("Simulación en curso")
@@ -15,10 +17,13 @@ def iniciar_simulacion(ventana_actual,semilla):
     ventana_simulacion.configure(bg="#e8e8e8")
     
     # Inicializa el estado de la simulación
-    #si semilla no es un numero, se genera una aleatoria
+    # si semilla no es un numero, se genera una aleatoria
     valor = semilla.get().strip()
-    semilla =int(valor) if valor.isdigit() else random.randint(0,10000)
-    estado=EstadoSimulacion(semilla=int(semilla))
+    semilla_val = int(valor) if valor.isdigit() else random.randint(0,10000)
+    # Use provided files if given, otherwise default to original files
+    ruta_tr = ruta_trenes if ruta_trenes is not None else "modelos/trenes.json"
+    ruta_es = ruta_estaciones if ruta_estaciones is not None else "modelos/estaciones.json"
+    estado = EstadoSimulacion(semilla=semilla_val, ruta_trenes=ruta_tr, ruta_estaciones=ruta_es)
     
     # Muestra de nuevo la ventana principal
     def volver_menu():

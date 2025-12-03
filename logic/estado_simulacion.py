@@ -10,7 +10,7 @@ import json
 
 class EstadoSimulacion:
 
-    def __init__(self, fecha_inicio_str="2015-01-01 07:00:00",semilla=random.randint(0,10000)):
+    def __init__(self, fecha_inicio_str="2015-01-01 07:00:00", semilla=random.randint(0,10000), ruta_trenes: str = "modelos/trenes.json", ruta_estaciones: str = "modelos/estaciones.json"):
         """
         Inicializa el estado de la simulación con la hora actual y la semilla para eventos aleatorios.
         
@@ -33,11 +33,17 @@ class EstadoSimulacion:
         self.historial_eventos = []
         self.historial_elecciones = []
         
-        #parametros objetos
-        self.trenes= cargar_objetos("modelos/trenes.json", tren)
-        self.estaciones= cargar_objetos("modelos/estaciones.json", estacion)
+        #parametros objetos (allow custom paths for simulation runs)
+        self.trenes = cargar_objetos(ruta_trenes, tren)
+        self.estaciones = cargar_objetos(ruta_estaciones, estacion)
         
         #parametros extra
+        # Track number of passengers currently on board per train
+        # initialize to 0 for every loaded train
+        try:
+            self.pasajeros_a_bordo = {t.nombre: 0 for t in self.trenes}
+        except Exception:
+            self.pasajeros_a_bordo = {}
 
 
     def actualizar_display(self):
