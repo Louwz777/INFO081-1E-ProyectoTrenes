@@ -1,6 +1,6 @@
 
 # INFO081-1E — PROYECTO DE PROGRAMACION
-##### Estado: casi-FINALIZADO (*firma de sangre)
+##### Estado: FINALIZADO (*firma de sangre)
 
 ## Resumen / Contexto
 
