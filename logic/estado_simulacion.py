@@ -65,19 +65,6 @@ class EstadoSimulacion:
         
         return self.tiempo_actual
 
-    def generador_eventos(self):
-        """
-        Genera eventos de forma aleatoria.
-        Returns:
-            str: Descripción del evento generado.
-        no se utiliza actualmente, ya que window llama a eventos directamente.
-        """
-        eventos = [
-            crear_evento_niebla(self)
-        ]
-        evento = random.choice(eventos)
-        return evento
-
     def __str__(self):
         hora, fecha = self.actualizar_display()
         return f"EstadoSimulacion(hora_actual={hora}, fecha={fecha})"

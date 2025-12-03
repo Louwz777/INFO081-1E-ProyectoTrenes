@@ -13,7 +13,7 @@ def iniciar_simulacion(ventana_actual,semilla):
 
     ventana_simulacion = tk.Toplevel()
     ventana_simulacion.title("Simulación en curso")
-    ventana_simulacion.geometry("800x600")
+    ventana_simulacion.state('zoomed')
     ventana_simulacion.configure(bg="#e8e8e8")
     
     # Inicializa el estado de la simulación
@@ -22,10 +22,11 @@ def iniciar_simulacion(ventana_actual,semilla):
     semilla =int(valor) if valor.isdigit() else random.randint(0,10000)
     estado=EstadoSimulacion(semilla=int(semilla))
     
- # Muestra de nuevo la ventana principal
+    # Muestra de nuevo la ventana principal
     def volver_menu():
         ventana_simulacion.destroy()
-        ventana_actual.deiconify() 
+        ventana_actual.deiconify()
+        ventana_actual.state('zoomed')
 
     boton_volver = tk.Button(
         ventana_simulacion,

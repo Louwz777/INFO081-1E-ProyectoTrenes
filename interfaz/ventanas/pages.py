@@ -10,16 +10,15 @@ from interfaz import settings as config
 
 from .common import ruta_raiz
 
-# In-memory list used by some views
+#En memoria
 lista_estaciones = []
 
 
 def _pagina_edicion_impl(ventana_actual):
-    # Moved implementation from window.py (kept in separate function to ease readability)
     ventana_actual.withdraw()
     pagina = tk.Toplevel()
     pagina.title("Página de Edición")
-    pagina.geometry("640x360")
+    pagina.state('zoomed')
     pagina.configure(bg=config.COLOR_GRIS)
 
     titulo = tk.Label(
@@ -157,6 +156,7 @@ def _pagina_edicion_impl(ventana_actual):
     def volver():
         pagina.destroy()
         ventana_actual.deiconify()
+        ventana_actual.state('zoomed')
 
     btn_volver = tk.Button(
         pagina,
@@ -172,7 +172,7 @@ def _pagina_edicion_impl(ventana_actual):
     btn_volver.pack(pady=12)
 
 
-# Expose expected name
+#Exponer nombre de la función
 pagina_edicion = _pagina_edicion_impl
 
 
@@ -193,7 +193,7 @@ def abrir_editor_estacion(parent):
 
     editor = tk.Toplevel()
     editor.title("Editar Estación")
-    editor.geometry("800x420")
+    editor.state('zoomed')
     editor.configure(bg=config.COLOR_GRIS)
 
     left = tk.Frame(editor, bg=config.COLOR_GRIS)
@@ -335,7 +335,7 @@ def pagina_edicion_trenes(ventana_actual):
     ventana_actual.withdraw()
     pagina = tk.Toplevel()
     pagina.title("Página de Edición - Trenes")
-    pagina.geometry("640x360")
+    pagina.state('zoomed')
     pagina.configure(bg=config.COLOR_GRIS)
 
     titulo = tk.Label(
@@ -392,6 +392,7 @@ def pagina_edicion_trenes(ventana_actual):
     def volver():
         pagina.destroy()
         ventana_actual.deiconify()
+        ventana_actual.state('zoomed')
 
     btn_volver = tk.Button(
         pagina,
@@ -411,7 +412,7 @@ def editar_rutas(ventana_actual):
     ventana_actual.withdraw()
     pagina = tk.Toplevel()
     pagina.title("Editar Rutas")
-    pagina.geometry("800x420")
+    pagina.state('zoomed')
     pagina.configure(bg=config.COLOR_GRIS)
 
     archivo_estaciones = os.path.join(ruta_raiz, "modelos", "estaciones.json")
@@ -587,6 +588,7 @@ def editar_rutas(ventana_actual):
     def cerrar():
         pagina.destroy()
         ventana_actual.deiconify()
+        ventana_actual.state('zoomed')
 
     btn_close = tk.Button(btn_frame, text="Cerrar", command=cerrar, bg=config.COLOR_AZUL, fg=config.COLOR_BLANCO, cursor="hand2")
     btn_close.pack(side=tk.LEFT, padx=8)
@@ -618,7 +620,7 @@ def ver_trenes(ventana_actual):
     ventana_actual.withdraw()
     ventana_lista = tk.Toplevel()
     ventana_lista.title("Lista de Trenes")
-    ventana_lista.geometry("700x600")
+    ventana_lista.state('zoomed')
     ventana_lista.configure(bg=config.COLOR_GRIS)
 
     titulo = tk.Label(
@@ -657,6 +659,7 @@ def ver_trenes(ventana_actual):
     def volver():
         ventana_lista.destroy()
         ventana_actual.deiconify()
+        ventana_actual.state('zoomed')
 
     boton_volver = tk.Button(
         ventana_lista,
@@ -686,7 +689,7 @@ def abrir_editor_tren(parent):
 
     editor = tk.Toplevel()
     editor.title("Editar Tren")
-    editor.geometry("800x420")
+    editor.state('zoomed')
     editor.configure(bg=config.COLOR_GRIS)
 
     left = tk.Frame(editor, bg=config.COLOR_GRIS)
@@ -827,7 +830,7 @@ def crear_tren(ventana_actual):
     ventana_actual.withdraw()
     crear = tk.Toplevel()
     crear.title("Crear Tren")
-    crear.geometry("520x320")
+    crear.state('zoomed')
     crear.configure(bg=config.COLOR_GRIS)
 
     titulo = tk.Label(crear, text="CREAR TREN", font=("Arial", 18, "bold"), bg=config.COLOR_GRIS, fg=config.COLOR_BLANCO)
@@ -882,6 +885,7 @@ def crear_tren(ventana_actual):
     def volver():
         crear.destroy()
         ventana_actual.deiconify()
+        ventana_actual.state('zoomed')
 
     btn_frame = tk.Frame(crear, bg=config.COLOR_GRIS)
     btn_frame.pack(pady=10)
@@ -897,7 +901,7 @@ def crear_estacion(ventana_actual):
     ventana_actual.withdraw()
     ventana_estacion = tk.Toplevel()
     ventana_estacion.title("Crear nueva estación")
-    ventana_estacion.geometry("600x500")
+    ventana_estacion.state('zoomed')
     ventana_estacion.configure(bg=config.COLOR_GRIS)
 
     titulo = tk.Label(
@@ -1017,6 +1021,7 @@ def crear_estacion(ventana_actual):
     def volver():
         ventana_estacion.destroy()
         ventana_actual.deiconify()
+        ventana_actual.state('zoomed')
 
     boton_volver = tk.Button(
         frame_botones,
@@ -1039,7 +1044,7 @@ def ver_estaciones(ventana_actual):
     ventana_actual.withdraw()
     ventana_lista = tk.Toplevel()
     ventana_lista.title("Lista de Estaciones")
-    ventana_lista.geometry("700x600")
+    ventana_lista.state('zoomed')
     ventana_lista.configure(bg=config.COLOR_GRIS)
 
     titulo = tk.Label(
@@ -1076,6 +1081,7 @@ def ver_estaciones(ventana_actual):
     def volver():
         ventana_lista.destroy()
         ventana_actual.deiconify()
+        ventana_actual.state('zoomed')
 
     boton_volver = tk.Button(
         ventana_lista,
