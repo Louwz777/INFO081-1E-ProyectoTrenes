@@ -33,10 +33,18 @@
         "nombre": "Chillán",
         "poblacion": 204091,
         "lineas": [
-            "L1CS",
-            "L2CS",
-            "L1TC",
-            "L2TC"
-        ]
+            "L1",
+            "L2"
+        ],
+        "rutas": {
+            "L1": {
+                "dest": "Talca",
+                "dist_km": 180.0
+            },
+            "L2": {
+                "dest": "Estación Central (Santiago)",
+                "dist_km": 406.0
+            }
+        }
     }
 }

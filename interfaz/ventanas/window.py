@@ -14,17 +14,7 @@ if ruta_raiz not in sys.path:
 
 from interfaz.ventanas.ventana_simulacion import iniciar_simulacion
 from interfaz.ventanas.common import ruta_imagen
-from interfaz.ventanas.pages import (
-    pagina_edicion,
-    abrir_editor_estacion,
-    pagina_edicion_trenes,
-    crear_tren,
-    crear_estacion,
-    ver_estaciones,
-    ver_trenes,
-    cargar_estaciones_desde_disco,
-    cargar_trenes_desde_disco,
-)
+from interfaz.ventanas.pages import pagina_edicion, pagina_edicion_trenes
 from interfaz import settings as config
 
 ##################################################################################

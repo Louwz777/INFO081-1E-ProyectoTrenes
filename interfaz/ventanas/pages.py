@@ -2,7 +2,7 @@ import os
 import json
 import tkinter as tk
 import tkinter.font as tkfont
-from tkinter import messagebox
+from tkinter import messagebox, simpledialog
 from PIL import ImageTk, Image
 
 from modelos.clases import estacion, guardar_objetos
@@ -72,6 +72,19 @@ def _pagina_edicion_impl(ventana_actual):
         pady=8
     )
     btn_crear.pack(side=tk.LEFT, padx=20)
+
+    btn_rutas = tk.Button(
+        frame,
+        text="Rutas",
+        command=lambda: editar_rutas(pagina),
+        bg=config.COLOR_AZUL,
+        fg=config.COLOR_BLANCO,
+        font=("Arial", 12),
+        cursor="hand2",
+        padx=12,
+        pady=8
+    )
+    btn_rutas.pack(side=tk.LEFT, padx=20)
 
     # --- Selección y borrado de estaciones directamente en la Página de Edición ---
     control_frame = tk.Frame(pagina, bg=config.COLOR_GRIS)
@@ -257,10 +270,14 @@ def abrir_editor_estacion(parent):
 
         # Revisar si el nuevo nombre ya existe (y no es el mismo que el antiguo)
         data_local = leer_dict()
+        # Preserve existing routes for this station (if any)
+        prev_rutas = {}
+        if old in data_local:
+            prev_rutas = data_local.get(old, {}).get('rutas', {})
         # Remover antiguo si cambia nombre
         if old != new_name and old in data_local:
             data_local.pop(old, None)
-        data_local[new_name] = {"nombre": new_name, "poblacion": pobl, "lineas": lineas}
+        data_local[new_name] = {"nombre": new_name, "poblacion": pobl, "lineas": lineas, "rutas": prev_rutas}
 
         try:
             with open(archivo_estaciones, 'w', encoding='utf-8') as f:
@@ -388,6 +405,191 @@ def pagina_edicion_trenes(ventana_actual):
         pady=6
     )
     btn_volver.pack(pady=12)
+
+
+def editar_rutas(ventana_actual):
+    ventana_actual.withdraw()
+    pagina = tk.Toplevel()
+    pagina.title("Editar Rutas")
+    pagina.geometry("800x420")
+    pagina.configure(bg=config.COLOR_GRIS)
+
+    archivo_estaciones = os.path.join(ruta_raiz, "modelos", "estaciones.json")
+
+    def leer_dict():
+        if not os.path.exists(archivo_estaciones):
+            return {}
+        try:
+            with open(archivo_estaciones, 'r', encoding='utf-8') as f:
+                return json.load(f)
+        except Exception as e:
+            print(f"Error leyendo estaciones: {e}")
+            return {}
+
+    data = leer_dict()
+
+    left = tk.Frame(pagina, bg=config.COLOR_GRIS)
+    left.pack(side=tk.LEFT, fill=tk.Y, padx=12, pady=12)
+
+    tk.Label(left, text="Estaciones:", bg=config.COLOR_GRIS, fg=config.COLOR_BLANCO).pack(anchor="w")
+
+    listbox = tk.Listbox(left, width=30, height=20)
+    listbox.pack(side=tk.LEFT, fill=tk.Y)
+
+    scrollbar = tk.Scrollbar(left, orient=tk.VERTICAL, command=listbox.yview)
+    scrollbar.pack(side=tk.LEFT, fill=tk.Y)
+    listbox.config(yscrollcommand=scrollbar.set)
+
+    nombres = sorted(data.keys())
+    for n in nombres:
+        listbox.insert(tk.END, n)
+
+    right = tk.Frame(pagina, bg=config.COLOR_GRIS)
+    right.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=12, pady=12)
+
+    tk.Label(right, text="Editar Rutas para estación:", bg=config.COLOR_GRIS, fg=config.COLOR_BLANCO).pack(anchor="w")
+
+    area_rutas = tk.Frame(right, bg=config.COLOR_GRIS)
+    area_rutas.pack(fill=tk.BOTH, expand=True, pady=8)
+
+    current_widgets = []
+    option_vars = {}
+    dist_vars = {}
+
+    def on_select(evt):
+        # clear previous widgets
+        for w in current_widgets:
+            w.destroy()
+        current_widgets.clear()
+        option_vars.clear()
+
+        sel = listbox.curselection()
+        if not sel:
+            return
+        name = listbox.get(sel[0])
+        entry = data.get(name, {})
+        lineas = entry.get('lineas', []) or []
+        rutas = entry.get('rutas', {}) or {}
+
+        estaciones_opciones = [""] + sorted(data.keys())
+
+        for i, linea in enumerate(lineas):
+            lbl = tk.Label(area_rutas, text=f"{linea} →", bg=config.COLOR_GRIS, fg=config.COLOR_BLANCO)
+            lbl.grid(row=i, column=0, sticky="w", padx=6, pady=4)
+            # destination selector
+            var = tk.StringVar(pagina)
+            prev = rutas.get(linea, "")
+            # support old format where rutas[linea] might be a string
+            if isinstance(prev, dict):
+                dest_prev = prev.get('dest', '')
+                dist_prev = prev.get('dist_km', '')
+            else:
+                dest_prev = prev or ''
+                dist_prev = ''
+            var.set(dest_prev)
+            opt = tk.OptionMenu(area_rutas, var, *estaciones_opciones)
+            opt.config(bg=config.COLOR_BLANCO, fg=config.COLOR_NEGRO)
+            opt.grid(row=i, column=1, sticky="w", padx=6, pady=4)
+            # distance entry
+            dvar = tk.StringVar(pagina)
+            dvar.set(str(dist_prev))
+            dist_entry = tk.Entry(area_rutas, textvariable=dvar, width=8)
+            dist_entry.grid(row=i, column=2, sticky="w", padx=6, pady=4)
+            km_label = tk.Label(area_rutas, text="km", bg=config.COLOR_GRIS, fg=config.COLOR_BLANCO)
+            km_label.grid(row=i, column=3, sticky="w", padx=(0,6), pady=4)
+            current_widgets.extend([lbl, opt, dist_entry, km_label])
+            option_vars[linea] = var
+            dist_vars[linea] = dvar
+
+    def editar_lineas_local():
+        # Edit comma-separated lines for selected station
+        sel = listbox.curselection()
+        if not sel:
+            messagebox.showwarning("Editar Líneas", "Seleccione una estación primero")
+            return
+        name = listbox.get(sel[0])
+        data_local = leer_dict()
+        entry = data_local.get(name, {})
+        old_lineas = entry.get('lineas', []) or []
+        init = ', '.join(old_lineas)
+        res = simpledialog.askstring("Editar Líneas", f"Líneas para {name} (separadas por coma):", initialvalue=init, parent=pagina)
+        if res is None:
+            return
+        new_lineas = [l.strip() for l in res.split(',') if l.strip()]
+        # preserve rutas for lines that still exist
+        old_rutas = entry.get('rutas', {}) or {}
+        new_rutas = {l: old_rutas.get(l, '') for l in new_lineas if old_rutas.get(l)}
+        entry['lineas'] = new_lineas
+        entry['rutas'] = new_rutas
+        data_local[name] = entry
+        try:
+            with open(archivo_estaciones, 'w', encoding='utf-8') as f:
+                json.dump(data_local, f, indent=4, ensure_ascii=False)
+            # refresh in-memory data and UI
+            data.clear()
+            data.update(data_local)
+            listbox.delete(0, tk.END)
+            for n in sorted(data.keys()):
+                listbox.insert(tk.END, n)
+            # re-select the same station and rebuild route widgets
+            idx = sorted(data.keys()).index(name)
+            listbox.select_set(idx)
+            listbox.event_generate('<<ListboxSelect>>')
+            messagebox.showinfo("Editar Líneas", "Líneas actualizadas correctamente")
+        except Exception as e:
+            messagebox.showerror("Error", f"Error guardando líneas: {e}")
+
+    listbox.bind('<<ListboxSelect>>', on_select)
+
+    def guardar_rutas():
+        sel = listbox.curselection()
+        if not sel:
+            return
+        name = listbox.get(sel[0])
+        data_local = leer_dict()
+        entry = data_local.get(name, {})
+        rutas_new = {}
+        # validate distances
+        for linea, var in option_vars.items():
+            dest = var.get().strip()
+            dist_s = dist_vars.get(linea, tk.StringVar()).get().strip() if dist_vars.get(linea) else ""
+            if not dest and not dist_s:
+                # nothing to save for this line
+                continue
+            # parse distance if provided
+            dist_val = None
+            if dist_s:
+                try:
+                    # allow decimals
+                    dist_val = float(dist_s)
+                except Exception:
+                    messagebox.showerror("Error", f"Distancia inválida para línea {linea}: '{dist_s}'")
+                    return
+            rutas_new[linea] = {"dest": dest, "dist_km": dist_val}
+        entry['rutas'] = rutas_new
+        data_local[name] = entry
+        try:
+            with open(archivo_estaciones, 'w', encoding='utf-8') as f:
+                json.dump(data_local, f, indent=4, ensure_ascii=False)
+            messagebox.showinfo("Rutas", "Rutas guardadas correctamente")
+        except Exception as e:
+            messagebox.showerror("Error", f"Error guardando rutas: {e}")
+
+    btn_frame = tk.Frame(right, bg=config.COLOR_GRIS)
+    btn_frame.pack(pady=12)
+
+    btn_save = tk.Button(btn_frame, text="Guardar Rutas", command=guardar_rutas, bg=config.COLOR_VERDE, fg=config.COLOR_BLANCO, cursor="hand2")
+    btn_save.pack(side=tk.LEFT, padx=8)
+
+    btn_edit_lines = tk.Button(btn_frame, text="Editar Líneas", command=editar_lineas_local, bg=config.COLOR_AZUL, fg=config.COLOR_BLANCO, cursor="hand2")
+    btn_edit_lines.pack(side=tk.LEFT, padx=8)
+
+    def cerrar():
+        pagina.destroy()
+        ventana_actual.deiconify()
+
+    btn_close = tk.Button(btn_frame, text="Cerrar", command=cerrar, bg=config.COLOR_AZUL, fg=config.COLOR_BLANCO, cursor="hand2")
+    btn_close.pack(side=tk.LEFT, padx=8)
 
 
 def cargar_trenes_desde_disco():
@@ -914,7 +1116,8 @@ def cargar_estaciones_desde_disco():
         try:
             poblacion = int(datos.get("poblacion", 0))
             lineas = datos.get("lineas", []) or []
-            estaciones.append(estacion(nombre, poblacion, lineas))
+            rutas = datos.get("rutas", {}) or {}
+            estaciones.append(estacion(nombre, poblacion, lineas, rutas))
         except Exception as e:
             print(f"Omitiendo entrada inválida {nombre}: {e}")
     return estaciones
