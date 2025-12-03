@@ -101,24 +101,8 @@ def iniciar_simulacion(ventana_actual, semilla, ruta_trenes: str = None, ruta_es
         nonlocal pausa
         pausa = True
 
-        # choose between available event creators
-        creators = [crear_evento_niebla]
-        if 'crear_evento_abordaje' in globals() or hasattr(__import__('logic.sistema_eventos.eventos', fromlist=['*']), 'crear_evento_abordaje'):
-            try:
-                from logic.sistema_eventos.eventos import crear_evento_abordaje
-                creators.append(crear_evento_abordaje)
-            except Exception:
-                pass
-
-        creator = random.choice(creators)
-        evento = creator(estado)
-        # use the generic window for events
-        try:
-            from logic.sistema_eventos.eventos import mostrar_evento_en_ventana
-            mostrar_evento_en_ventana(evento, aplicar_opcion)
-        except Exception:
-            # fallback: apply directly
-            aplicar_opcion(evento.opcion1)
+        evento = crear_evento_niebla(estado)
+        mostrar_evento_en_ventana(evento,estado)
     
 
               

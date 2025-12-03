@@ -11,7 +11,7 @@ import tkinter as tk
 """
 ventana para eventos
 """
-def mostrar_evento_en_ventana(evento, aplicar_opcion):
+def mostrar_evento_en_ventana(evento, estado):
     ventana = tk.Toplevel()
     ventana.title(evento.nombre)
     ventana.geometry("400x300")
@@ -52,7 +52,7 @@ def mostrar_evento_en_ventana(evento, aplicar_opcion):
     tk.Button(
         frame,
         text=evento.opcion1.descripcion,
-        command=lambda: (aplicar_opcion(evento.opcion1), cerrar_ventana()),
+        command=lambda: (evento.opcion1.ejecutar_efecto(estado, evento.nombre), cerrar_ventana()),
         bg="white"
     ).pack(pady=5)
 
@@ -60,7 +60,7 @@ def mostrar_evento_en_ventana(evento, aplicar_opcion):
     tk.Button(
         frame,
         text=evento.opcion2.descripcion,
-        command=lambda: (aplicar_opcion(evento.opcion2), cerrar_ventana()),
+        command=lambda: (evento.opcion2.ejecutar_efecto(estado, evento.nombre), cerrar_ventana()),
         bg="white"
     ).pack(pady=5)
 
