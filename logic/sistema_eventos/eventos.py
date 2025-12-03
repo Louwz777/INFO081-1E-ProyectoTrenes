@@ -148,7 +148,7 @@ def crear_evento_abordaje(estado: Callable[[Any], Any] = None) -> Evento:
     - Esperar un tiempo para intentar recoger más pasajeros (aumenta el tiempo simulado).
     """
     if not estado or not getattr(estado, 'trenes', None):
-        # fallback to a simple event if no train data
+        #fallback si no hay trenes disponibles
         descripcion = "No hay trenes disponibles para el evento de abordaje."
         op1 = opcion(descripcion="No aplicar", efecto=lambda s: "No hay cambios.")
         op2 = opcion(descripcion="Ignorar", efecto=lambda s: "No hay cambios.")
@@ -159,9 +159,9 @@ def crear_evento_abordaje(estado: Callable[[Any], Any] = None) -> Evento:
     current_onboard = estado.pasajeros_a_bordo.get(tren.nombre, 0)
     available_space = max(0, capacidad - current_onboard)
 
-    # Simulate number of waiting passengers using a burst-friendly heuristic
+    #Simular cuantos pasajeros esperan en la estacion
     waiting = random.randint(0, max(1, int(capacidad * 0.4)))
-    # propose drop count (passengers leaving at this station)
+    #propone cuantos pasajeros bajan
     dropping = random.randint(0, current_onboard) if current_onboard > 0 else 0
 
     descripcion = (
@@ -174,9 +174,9 @@ def crear_evento_abordaje(estado: Callable[[Any], Any] = None) -> Evento:
     )
 
     def efecto_abordar(estado_local):
-        # passengers who will board = min(waiting, available_space)
+        #pasajeros que suben = min(waiting, available_space)
         boarded = min(waiting, available_space)
-        # passengers who get off = dropping
+        #pasajeros que bajan = dropping
         new_onboard = max(0, current_onboard - dropping) + boarded
         estado_local.pasajeros_a_bordo[tren.nombre] = new_onboard
         restante = max(0, capacidad - new_onboard)
@@ -184,11 +184,11 @@ def crear_evento_abordaje(estado: Callable[[Any], Any] = None) -> Evento:
                 f"Ahora a bordo: {new_onboard}. Capacidad restante: {restante}.")
 
     def efecto_esperar(estado_local):
-        # decide waiting time in minutes and advance simulation
+        #decidir tiempo de espera
         espera_min = random.choice([1, 2, 5, 10])
-        # advance time
+        #avanzar tiempo
         estado_local.avanzar_tiempo(segundos=espera_min * 60)
-        # after waiting, simulate new arrivals
+        #despues de esperar, simular nuevas llegadas
         nuevos = random.randint(0, max(1, int(capacidad * 0.25)))
         espacio = max(0, capacidad - estado_local.pasajeros_a_bordo.get(tren.nombre, 0))
         suben = min(nuevos, espacio)
