@@ -5,6 +5,7 @@ import sys
 import os
 import tkinter as tk
 import tkinter.font as tkfont
+from tkinter import messagebox
 from PIL import Image, ImageTk
 
 # Asegura que window.py este en el path para que
@@ -17,6 +18,7 @@ from interfaz.ventanas.common import ruta_imagen
 from interfaz.ventanas.ventana_simulacion import iniciar_simulacion
 from interfaz.ventanas.pages import _pagina_edicion_impl, pagina_edicion_trenes
 from interfaz import settings as config
+from modelos.clases import cargar_objetos, tren, estacion
 
 ##################################################################################
 
@@ -100,17 +102,66 @@ def ventana_principal():
         frame = tk.Frame(dlg, bg=config.COLOR_BLANCO)
         frame.pack(pady=8)
 
+        def mostrar_confirmacion(ruta_tr, ruta_es):
+            dlg.destroy()
+            
+            try:
+                lista_trenes = cargar_objetos(ruta_tr, tren)
+                lista_estaciones = cargar_objetos(ruta_es, estacion)
+            except Exception as e:
+                messagebox.showerror("Error", f"Error cargando archivos:\n{e}")
+                return
+
+            conf = tk.Toplevel(parent)
+            conf.title("Confirmar Inicio")
+            conf.state('zoomed')
+            conf.configure(bg=config.COLOR_GRIS)
+
+            tk.Label(conf, text="Confirmar datos de simulación", font=("Arial", 20, "bold"), bg=config.COLOR_GRIS, fg=config.COLOR_BLANCO).pack(pady=20)
+
+            lists_frame = tk.Frame(conf, bg=config.COLOR_GRIS)
+            lists_frame.pack(fill=tk.BOTH, expand=True, padx=20, pady=10)
+
+            frame_trenes = tk.Frame(lists_frame, bg=config.COLOR_GRIS)
+            frame_trenes.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=10)
+            tk.Label(frame_trenes, text="Trenes a cargar:", font=("Arial", 14, "bold"), bg=config.COLOR_GRIS, fg=config.COLOR_BLANCO).pack(anchor="w")
+            
+            listbox_trenes = tk.Listbox(frame_trenes, font=("Courier", 10))
+            listbox_trenes.pack(fill=tk.BOTH, expand=True, pady=5)
+            for t in lista_trenes:
+                listbox_trenes.insert(tk.END, f"{t.nombre} (Vel: {t.velocidad}, Cap: {t.capacidad()})")
+
+            frame_estaciones = tk.Frame(lists_frame, bg=config.COLOR_GRIS)
+            frame_estaciones.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=10)
+            tk.Label(frame_estaciones, text="Estaciones a cargar:", font=("Arial", 14, "bold"), bg=config.COLOR_GRIS, fg=config.COLOR_BLANCO).pack(anchor="w")
+            
+            listbox_estaciones = tk.Listbox(frame_estaciones, font=("Courier", 10))
+            listbox_estaciones.pack(fill=tk.BOTH, expand=True, pady=5)
+            for e in lista_estaciones:
+                listbox_estaciones.insert(tk.END, f"{e.nombre} (Pobl: {e.poblacion})")
+
+            btn_frame = tk.Frame(conf, bg=config.COLOR_GRIS)
+            btn_frame.pack(pady=20)
+
+            def confirmar():
+                conf.destroy()
+                iniciar_simulacion(parent, entrada_semilla, ruta_trenes=ruta_tr, ruta_estaciones=ruta_es)
+
+            def cancelar():
+                conf.destroy()
+
+            tk.Button(btn_frame, text="CONFIRMAR E INICIAR", command=confirmar, bg=config.COLOR_VERDE, fg=config.COLOR_BLANCO, font=("Arial", 14, "bold"), padx=20, pady=10).pack(side=tk.LEFT, padx=20)
+            tk.Button(btn_frame, text="CANCELAR", command=cancelar, bg=config.COLOR_ROJO, fg=config.COLOR_BLANCO, font=("Arial", 14, "bold"), padx=20, pady=10).pack(side=tk.LEFT, padx=20)
+
         def inicio_default():
             ruta_tr = os.path.join(ruta_raiz, "modelos", "trenes_default.json")
             ruta_es = os.path.join(ruta_raiz, "modelos", "estaciones_default.json")
-            dlg.destroy()
-            iniciar_simulacion(parent, entrada_semilla, ruta_trenes=ruta_tr, ruta_estaciones=ruta_es)
+            mostrar_confirmacion(ruta_tr, ruta_es)
 
         def inicio_personalizado():
             ruta_tr = os.path.join(ruta_raiz, "modelos", "trenes.json")
             ruta_es = os.path.join(ruta_raiz, "modelos", "estaciones.json")
-            dlg.destroy()
-            iniciar_simulacion(parent, entrada_semilla, ruta_trenes=ruta_tr, ruta_estaciones=ruta_es)
+            mostrar_confirmacion(ruta_tr, ruta_es)
 
         btn_default = tk.Button(frame, text="Inicio por defecto", command=inicio_default, bg=config.COLOR_AZUL, fg=config.COLOR_BLANCO, width=16, cursor="hand2")
         btn_default.pack(side=tk.LEFT, padx=12)

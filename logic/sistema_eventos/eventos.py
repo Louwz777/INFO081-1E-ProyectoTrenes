@@ -169,7 +169,7 @@ def crear_evento_abordaje(estado: Callable[[Any], Any] = None) -> Evento:
         f"Pasajeros a bordo: {current_onboard} / {capacidad}\n"
         f"Espacio disponible: {available_space}\n"
         f"Pasajeros esperando en estación: {waiting}\n\n"
-        "Opciones:\n1) Permitir abordar & descargar pasajeros ahora.\n"
+        "Opciones:\\n1) Permitir abordar & descargar pasajeros ahora.\\n"
         "2) Esperar un tiempo para intentar recoger más pasajeros."
     )
 
