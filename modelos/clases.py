@@ -46,7 +46,7 @@ class pasajero:
         
 class estacion:
 
-    def __init__(self,nombre:str,poblacion:int,lineas:list,rutas:list=[]):
+    def __init__(self,nombre:str,poblacion:int,lineas:list,rutas:list=[],rutas_rotacion:int=0):
         self.nombre = nombre
         self.poblacion = poblacion
         self.lineas = lineas 

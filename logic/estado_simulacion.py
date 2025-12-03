@@ -4,7 +4,8 @@ Módulo para el manejo del estado de la simulación.
 from datetime import datetime, timedelta, time
 from modelos.clases import *
 from logic.sistema_eventos.eventos import crear_evento_niebla
-import random;
+import random
+import json
 
 
 class EstadoSimulacion:
@@ -71,6 +72,19 @@ class EstadoSimulacion:
         
         return self.tiempo_actual
 
+    def guardar_historial(self, ruta_archivo="historial_simulacion.json"):
+        """
+        Guarda el historial de eventos y elecciones en un archivo JSON.
+        Args:
+            ruta_archivo (str): Ruta del archivo donde se guardará el historial.
+        """
+        historial = {
+            "eventos": self.historial_eventos,
+            "elecciones": self.historial_elecciones
+        }
+        with open(ruta_archivo, 'w') as archivo:
+            json.dump(historial, archivo, indent=4)
+    
     def __str__(self):
         hora, fecha = self.actualizar_display()
         return f"EstadoSimulacion(hora_actual={hora}, fecha={fecha})"
