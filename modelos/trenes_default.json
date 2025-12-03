@@ -1,13 +1,13 @@
 {
     "lento": {
         "nombre": "Tren BMU",
-        "velocidad": 160,
+        "velocidad_max": 160,
         "ppv": 59,
         "ccv": 4
     },
     "fast": {
         "nombre": "Tren EMU",
-        "velocidad": 120,
+        "velocidad_max": 120,
         "ppv": 60,
         "ccv": 5
     }

@@ -1,13 +1,13 @@
 {
     "lento": {
         "nombre": "lento",
-        "velocidad": 125,
+        "velocidad_max": 100,
         "ppv": 100,
         "ccv": 50
     },
     "fast": {
         "nombre": "fast",
-        "velocidad": 1225,
+        "velocidad_max": 150,
         "ppv": 100,
         "ccv": 50
     }
