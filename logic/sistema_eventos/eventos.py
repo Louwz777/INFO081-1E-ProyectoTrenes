@@ -112,7 +112,7 @@ def crear_evento_niebla(estado:Callable[[Any], Any] = None)->Evento:
     tren = random.choice(estado.trenes)
     
     efecto_reducir_velocidad= lambda s: (
-        setattr(tren, 'velocidad', tren.velocidad * 0.5),
+        setattr(tren, 'velocidad', tren.velocidad_max * 0.5),
         f"La velocidad del tren {tren.nombre} se ha reducido a {tren.velocidad} km/h debido a la niebla."
     )
     
