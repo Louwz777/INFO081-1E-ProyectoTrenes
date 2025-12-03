@@ -35,7 +35,8 @@ def iniciar_simulacion(ventana_actual,semilla):
         bg="white",
         fg="black"
     )
-    boton_volver.pack(pady=20)
+    # Place the return button at the bottom so it is always visible
+    boton_volver.pack(side=tk.BOTTOM, pady=10)
     
 
     
@@ -67,9 +68,17 @@ def iniciar_simulacion(ventana_actual,semilla):
     pausa = False
     
     def actualizar_tiempo():
-        if pausa==False:
+        # Update clock display every second. If there's an active event message
+        # show a short version of it alongside the hour (e.g. "Niebla densa").
+        if not pausa:
             hora, fecha = estado.actualizar_display()
-            label_reloj.config(text=f"Hora: {hora}   Fecha: {fecha}")
+            # get first line of event text (if any) to keep clock concise
+            evento_text = label_eventos.cget('text') or ""
+            if evento_text:
+                primera_linea = evento_text.splitlines()[0]
+                label_reloj.config(text=f"Hora: {hora}   Fecha: {fecha}   - {primera_linea}")
+            else:
+                label_reloj.config(text=f"Hora: {hora}   Fecha: {fecha}")
             estado.avanzar_tiempo(segundos=1)
         ventana_simulacion.after(1000, actualizar_tiempo)
 
@@ -85,22 +94,8 @@ def iniciar_simulacion(ventana_actual,semilla):
         pausa = True
 
         evento = crear_evento_niebla(estado)
-        
-        ventana_evento = tk.Toplevel()
-        ventana_evento.title(f"Evento: {evento.nombre}")
-        ventana_evento.geometry("500x400")
-        ventana_evento.configure(bg="#f4f4f4")
-        
-        label_titulo = tk.Label(
-        ventana_evento,
-        text=evento.nombre,
-        font=("Arial", 20, "bold"),
-        bg="#f4f4f4"
-        )
-        label_titulo.pack(pady=10)        
-        
-        
-        
+        label_eventos.config(text=f"Evento: {evento.nombre}\n{evento.descripcion}")
+                
         for widget in frame_opciones.winfo_children():
             widget.destroy()
         
