@@ -97,7 +97,7 @@ def iniciar_simulacion(ventana_actual,semilla):
         pausa = True
 
         evento = crear_evento_niebla(estado)
-        mostrar_evento_en_ventana(evento,aplicar_opcion)
+        mostrar_evento_en_ventana(evento,estado)
     
 
               
