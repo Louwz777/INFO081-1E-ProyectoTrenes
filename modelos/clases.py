@@ -45,18 +45,23 @@ class pasajero:
             }
         
 class estacion:
-
-    def __init__(self,nombre:str,poblacion:int,lineas:list):
+    def __init__(self,nombre:str,poblacion:int,lineas:list, rutas:dict=None):
         self.nombre = nombre
         self.poblacion = poblacion
-        self.lineas = lineas 
+        self.lineas = lineas
+        # rutas: mapping from linea -> estacion_destino (str). Default empty dict
+        self.rutas = rutas or {}
 
     def convertir_dicc(self):
         return {
             "nombre": self.nombre,
             "poblacion": self.poblacion,
-            "lineas": self.lineas
+            "lineas": self.lineas,
+            "rutas": self.rutas
             }
+
+
+
 
 """
 # Funciones para guardar objetos
