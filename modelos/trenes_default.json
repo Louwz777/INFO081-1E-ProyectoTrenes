@@ -1,11 +1,11 @@
 {
-    "lento": {
+    "Tren BMU": {
         "nombre": "Tren BMU",
         "velocidad": 160,
         "ppv": 59,
         "ccv": 4
     },
-    "fast": {
+    "Tren EMU": {
         "nombre": "Tren EMU",
         "velocidad": 120,
         "ppv": 60,
