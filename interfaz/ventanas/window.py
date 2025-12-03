@@ -129,7 +129,7 @@ def ventana_principal():
             listbox_trenes = tk.Listbox(frame_trenes, font=("Courier", 10))
             listbox_trenes.pack(fill=tk.BOTH, expand=True, pady=5)
             for t in lista_trenes:
-                listbox_trenes.insert(tk.END, f"{t.nombre} (Vel: {t.velocidad}, Cap: {t.capacidad()})")
+                listbox_trenes.insert(tk.END, f"{t.nombre} (Vel: {t.velocidad_max}, Cap: {t.capacidad()})")
 
             frame_estaciones = tk.Frame(lists_frame, bg=config.COLOR_GRIS)
             frame_estaciones.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=10)
