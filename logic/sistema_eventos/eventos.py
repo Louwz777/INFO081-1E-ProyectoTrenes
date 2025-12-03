@@ -11,6 +11,7 @@ import tkinter as tk
 """
 ventana para eventos
 """
+
 def mostrar_evento_en_ventana(evento, estado,continuar):
     ventana = tk.Toplevel()
     ventana.title(evento.nombre)
@@ -106,7 +107,19 @@ funciones para crear eventos
 """
  
 def crear_evento_niebla(estado:Callable[[Any], Any] = None)->Evento:
-        
+    """Escoge un tren al azar y crea un evento de niebla que afecta su velocidad.
+    la idea es que ocurra cuando el tren este esperando en una estacion, sino no tiene sentido."""
+    tren = random.choice(estado.trenes)
+    
+    efecto_reducir_velocidad= lambda s: (
+        setattr(tren, 'velocidad', tren.velocidad * 0.5),
+        f"La velocidad del tren {tren.nombre} se ha reducido a {tren.velocidad} km/h debido a la niebla."
+    )
+    
+    #FALTA IMPLEMENTAR EFECTO DE ESPERAR
+    efecto_esperar= lambda s: (
+        f"El tren {tren.nombre} va a esperar hasta que la niebla se disipe."  
+    )    
     
 
     descripcion_evento = f"Hay una densa niebla que afecta al tren {tren.nombre}. ¿Qué deseas hacer?"
@@ -125,65 +138,3 @@ def crear_evento_niebla(estado:Callable[[Any], Any] = None)->Evento:
         opcion2=opcion2
     )
     
-
-def crear_evento_abordaje(estado: Callable[[Any], Any] = None) -> Evento:
-    """Evento que modela el abordaje y descenso de pasajeros en una estación.
-    Presenta dos opciones al usuario:
-    - Permitir abordar y descargar una cantidad determinada (se calcula en el evento).
-    - Esperar un tiempo para intentar recoger más pasajeros (aumenta el tiempo simulado).
-    """
-    if not estado or not getattr(estado, 'trenes', None):
-        #fallback si no hay trenes disponibles
-        descripcion = "No hay trenes disponibles para el evento de abordaje."
-        op1 = opcion(descripcion="No aplicar", efecto=lambda s: "No hay cambios.")
-        op2 = opcion(descripcion="Ignorar", efecto=lambda s: "No hay cambios.")
-        return Evento(nombre="Abordaje (no disponible)", descripcion=descripcion, opcion1=op1, opcion2=op2)
-
-    tren = random.choice(estado.trenes)
-    capacidad = tren.capacidad() if hasattr(tren, 'capacidad') else (tren.ccv * tren.ppv)
-    current_onboard = estado.pasajeros_a_bordo.get(tren.nombre, 0)
-    available_space = max(0, capacidad - current_onboard)
-
-    #Simular cuantos pasajeros esperan en la estacion
-    waiting = random.randint(0, max(1, int(capacidad * 0.4)))
-    #propone cuantos pasajeros bajan
-    dropping = random.randint(0, current_onboard) if current_onboard > 0 else 0
-
-    descripcion = (
-        f"Tren: {tren.nombre}\n" 
-        f"Pasajeros a bordo: {current_onboard} / {capacidad}\n"
-        f"Espacio disponible: {available_space}\n"
-        f"Pasajeros esperando en estación: {waiting}\n\n"
-        "Opciones:\\n1) Permitir abordar & descargar pasajeros ahora.\\n"
-        "2) Esperar un tiempo para intentar recoger más pasajeros."
-    )
-
-    def efecto_abordar(estado_local):
-        #pasajeros que suben = min(waiting, available_space)
-        boarded = min(waiting, available_space)
-        #pasajeros que bajan = dropping
-        new_onboard = max(0, current_onboard - dropping) + boarded
-        estado_local.pasajeros_a_bordo[tren.nombre] = new_onboard
-        restante = max(0, capacidad - new_onboard)
-        return (f"Se bajaron {dropping} pasajeros y subieron {boarded}.\n"
-                f"Ahora a bordo: {new_onboard}. Capacidad restante: {restante}.")
-
-    def efecto_esperar(estado_local):
-        #decidir tiempo de espera
-        espera_min = random.choice([1, 2, 5, 10])
-        #avanzar tiempo
-        estado_local.avanzar_tiempo(segundos=espera_min * 60)
-        #despues de esperar, simular nuevas llegadas
-        nuevos = random.randint(0, max(1, int(capacidad * 0.25)))
-        espacio = max(0, capacidad - estado_local.pasajeros_a_bordo.get(tren.nombre, 0))
-        suben = min(nuevos, espacio)
-        estado_local.pasajeros_a_bordo[tren.nombre] = estado_local.pasajeros_a_bordo.get(tren.nombre, 0) + suben
-        return (f"Espera de {espera_min} min. Llegaron {nuevos} pasajeros, subieron {suben}.\n"
-                f"A bordo ahora: {estado_local.pasajeros_a_bordo[tren.nombre]} / {capacidad}.")
-
-    op1 = opcion(descripcion=f"Abordar y descargar ahora (subir hasta {min(waiting, available_space)}, bajar {dropping})", efecto=efecto_abordar)
-    op2 = opcion(descripcion=f"Esperar para intentar coger más (tiempo variable)", efecto=efecto_esperar)
-
-    return Evento(nombre="Evento: Abordaje en estación", descripcion=descripcion, opcion1=op1, opcion2=op2)
-    
-        
