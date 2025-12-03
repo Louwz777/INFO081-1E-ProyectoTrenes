@@ -40,7 +40,7 @@ def iniciar_simulacion(ventana_actual, semilla, ruta_trenes: str = None, ruta_es
         bg="white",
         fg="black"
     )
-    # Place the return button at the bottom so it is always visible
+
     boton_volver.pack(side=tk.BOTTOM, pady=10)
     
 
@@ -52,7 +52,7 @@ def iniciar_simulacion(ventana_actual, semilla, ruta_trenes: str = None, ruta_es
         bg="#e8e8e8",
         fg="#0066cc"
     )
-    label_reloj.pack(pady=100)
+    label_reloj.place(x=10, y=10)
     
     label_eventos = tk.Label(
         ventana_simulacion,
@@ -76,17 +76,10 @@ def iniciar_simulacion(ventana_actual, semilla, ruta_trenes: str = None, ruta_es
     
     #funcion para actualizar tiempo, cada 1000ms se llama denuevo a si misma, actualizando el texto
     def actualizar_tiempo():
-        # Update clock display every second. If there's an active event message
-        # show a short version of it alongside the hour (e.g. "Niebla densa").
+        
         if not pausa:
             hora, fecha = estado.actualizar_display()
-            # get first line of event text (if any) to keep clock concise
-            evento_text = label_eventos.cget('text') or ""
-            if evento_text:
-                primera_linea = evento_text.splitlines()[0]
-                label_reloj.config(text=f"Hora: {hora}   Fecha: {fecha}   - {primera_linea}")
-            else:
-                label_reloj.config(text=f"Hora: {hora}   Fecha: {fecha}")
+            label_reloj.config(text=f"Hora: {hora}   Fecha: {fecha}")
             estado.avanzar_tiempo(segundos=1)
         ventana_simulacion.after(1000, actualizar_tiempo)
     
