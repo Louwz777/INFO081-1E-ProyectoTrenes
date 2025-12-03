@@ -100,7 +100,7 @@ INFO081-1E-ProyectoTrenes/
 - **Archivos de datos**:
   - `trenes.json` / `trenes_default.json`
   - `estaciones.json` / `estaciones_default.json`
-  - `pasajeros.parquet` (planeado, aún no implementado completamente)
+  - `pasajeros.parquet`
 
 ### 4. Submódulos
 
