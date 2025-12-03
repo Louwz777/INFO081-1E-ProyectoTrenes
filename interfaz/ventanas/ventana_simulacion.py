@@ -67,11 +67,14 @@ def iniciar_simulacion(ventana_actual, semilla, ruta_trenes: str = None, ruta_es
     frame_opciones.pack(pady=20)
     
 
-    
-    #funcion para actualizar tiempo, cada 1000ms se llama denuevo a si misma, actualizando el texto
-    
+    def reanudar_tiempo():
+        nonlocal pausa
+        pausa = False
+        ventana_simulacion.after(random.randint(5, 15) * 1000, generar_evento)
+        
     pausa = False
     
+    #funcion para actualizar tiempo, cada 1000ms se llama denuevo a si misma, actualizando el texto
     def actualizar_tiempo():
         # Update clock display every second. If there's an active event message
         # show a short version of it alongside the hour (e.g. "Niebla densa").
@@ -102,7 +105,7 @@ def iniciar_simulacion(ventana_actual, semilla, ruta_trenes: str = None, ruta_es
         pausa = True
 
         evento = crear_evento_niebla(estado)
-        mostrar_evento_en_ventana(evento,estado)
+        mostrar_evento_en_ventana(evento,estado, lambda:reanudar_tiempo())
     
 
               

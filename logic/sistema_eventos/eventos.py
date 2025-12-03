@@ -11,7 +11,7 @@ import tkinter as tk
 """
 ventana para eventos
 """
-def mostrar_evento_en_ventana(evento, estado):
+def mostrar_evento_en_ventana(evento, estado,continuar):
     ventana = tk.Toplevel()
     ventana.title(evento.nombre)
     ventana.geometry("400x300")
@@ -25,7 +25,7 @@ def mostrar_evento_en_ventana(evento, estado):
     def cerrar_ventana():
         ventana.allowed_close = True
         ventana.destroy()
-           
+        continuar()
         
     ventana.allowed_close = False
     ventana.protocol("WM_DELETE_WINDOW", lambda: evitar_cierre())
