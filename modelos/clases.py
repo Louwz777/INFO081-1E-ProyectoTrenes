@@ -4,7 +4,7 @@
 import json;
 import os;
 import pandas as pd;
-from gen_BAT import *
+from generadores import *
 
 
 ##crea una variable con la ruta de la carpeta datos

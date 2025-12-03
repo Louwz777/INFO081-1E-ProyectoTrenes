@@ -2,7 +2,7 @@ import datetime as dt
 from collections.abc import Callable
 from typing import Any
 
-from gen_BAT import Generador
+from generadores import Generador
 
 
 class GeneradorBatido(Generador):
