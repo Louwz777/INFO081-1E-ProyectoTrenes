@@ -85,8 +85,22 @@ def iniciar_simulacion(ventana_actual,semilla):
         pausa = True
 
         evento = crear_evento_niebla(estado)
-        label_eventos.config(text=f"Evento: {evento.nombre}\n{evento.descripcion}")
-                
+        
+        ventana_evento = tk.Toplevel()
+        ventana_evento.title(f"Evento: {evento.nombre}")
+        ventana_evento.geometry("500x400")
+        ventana_evento.configure(bg="#f4f4f4")
+        
+        label_titulo = tk.Label(
+        ventana_evento,
+        text=evento.nombre,
+        font=("Arial", 20, "bold"),
+        bg="#f4f4f4"
+        )
+        label_titulo.pack(pady=10)        
+        
+        
+        
         for widget in frame_opciones.winfo_children():
             widget.destroy()
         
