@@ -46,10 +46,12 @@ class pasajero:
         
 class estacion:
 
-    def __init__(self,nombre:str,poblacion:int,lineas:list):
+    def __init__(self,nombre:str,poblacion:int,lineas:list,generador=None):
         self.nombre = nombre
         self.poblacion = poblacion
         self.lineas = lineas 
+        self.generador = generador
+        
 
     def convertir_dicc(self):
         return {
