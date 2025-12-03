@@ -30,20 +30,20 @@ El objetivo principal en esta entrega es presentar la interfaz básica, el model
 
 ## Persistencia de datos
 
-- Carpeta: `data/` en la raíz del proyecto (el sistema de guardado debe crearla si no existe).
+- Carpeta: `modelos/` en la raíz del proyecto (el sistema de guardado debe crearla si no existe).
 - Formatos que se usarán:
-  - JSON -> objetos del dominio (trenes, estaciones, configuración). Ej.: `data/trenes.json`, `data/estaciones.json`.
-  - Parquet -> datos de pasajeros (p. ej. `data/pasajeros.parquet`) para eficiencia en tablas grandes.
+  - JSON -> objetos del dominio (trenes, estaciones, configuración). Ej.: `modelos/trenes.json`, `modelos/estaciones.json`.
+  - Parquet -> datos de pasajeros (p. ej. `modelos/pasajeros.parquet`) para eficiencia en tablas grandes.
 
   - CSV -> Datos de la simulación, donde cada fila será un guardado distinto y cada columna un dato diferente.
 
-- Responsable: `logic/sistema_guardado/sistema_guardado.py` (métodos `guardar_simulacion` / `cargar_simulacion`).
+- Responsable: `logic/modelos/clases.py` (métodos `guardar_simulacion` / `cargar_simulacion`).
 
 ## Archivos principales ejecutables y ejemplo de ejecución
 
 Lista de entradas ejecutables principales:
 
-- `chuchu.Py` (archivo principal) — arranca la aplicación llamando a `interfaz.ventanas.window.ventana_principal()`.
+- `chuchu.Py` (archivo principal) — arranca la aplicación llamando a `window.ventana_principal()`.
 - `interfaz/ventanas/window.py` — contiene la interfaz principal y puede ejecutarse directamente como módulo.
 
 Recomendación: ejecutar desde la raíz del proyecto. 
@@ -56,10 +56,4 @@ Recomendación: ejecutar desde la raíz del proyecto.
 `> python chuchu.Py`
 
 ##### Opción 2: ejecutar la ventana principal como módulo (recomendado para respetar imports relativos)
-`> python -m interfaz.ventanas.window`
-
-### Ideas para proxima entrega:
-
-- `logic/sistema_guardado/sistema_guardado.py` tiene stubs y requiere implementación para guardar/cargar JSON y Parquet.
-- `modelos/clases.py` incluye `convertir_dicc()` en las entidades, lo que facilita serialización.
-- En siguientes entregas conviene añadir tests unitarios para serialización y un pequeño script de integración que guarde/cargue un estado de ejemplo.
+`> python -m ventana_principal`
