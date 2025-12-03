@@ -122,12 +122,24 @@ def iniciar_simulacion(ventana_actual, semilla, ruta_tren: str = None, ruta_est:
                 status_text += f"{t.nombre}: {passengers} pasajeros, {current_speed} km/h\n"
             label_trenes.config(text=status_text)
             
+            #mostrar en pantalla los pasajeros 
+            status_pasajeros = "Pasajeros en estaciones:\n"
+            for est in estado.estaciones:
+                status_pasajeros += f"{est.nombre}: {len(est.pasajeros_esperando)} esperando\n"
+            label_eventos.config(text=status_pasajeros)
+            #manejo de eventos
             estado.avanzar_tiempo(segundos=1)
             estado.segundos_desde_ultimo_evento += 1
             
             if estado.segundos_desde_ultimo_evento >= estado.proximo_evento:
                 generar_evento()
-
+        
+            # Genera pasajeros cada minuto
+            if estado.tiempo_actual.second % 60 == 0:  
+                for est in estado.estaciones:
+                    nuevos_pasajeros = est.generar_pasajeros(1, estado.estaciones)  # 1 minuto de simulación
+                    est.pasajeros_esperando.extend(nuevos_pasajeros)
+            
         ventana_simulacion.after(1000, actualizar_tiempo)
     
 
@@ -136,95 +148,7 @@ def iniciar_simulacion(ventana_actual, semilla, ruta_tren: str = None, ruta_est:
         pausa = True
 
         evento = crear_evento_niebla(estado)
-        mostrar_evento_en_ventana(evento, estado, lambda: reanudar_tiempo())
-    
-
-    actualizar_tiempo()
-
-
-
-def iniciar_simulacion_desde_guardado(ventana_actual, ruta_guardado: str):
-    messagebox.showinfo("DEBUG", f"Cargando simulación desde:\n{ruta_guardado}")
-    ventana_actual.withdraw()
-
-    ventana_simulacion = tk.Toplevel()
-    ventana_simulacion.title("Simulación en curso (cargada)")
-    ventana_simulacion.state('zoomed')
-    ventana_simulacion.configure(bg="#e8e8e8")
-
-
-    estado = EstadoSimulacion.cargar_desde_archivo(ruta_guardado)
-
-
-    def volver_menu():
-        ventana_simulacion.destroy()
-        ventana_actual.deiconify()
-        ventana_actual.state('zoomed')
-
-    boton_volver = tk.Button(
-        ventana_simulacion,
-        text="Volver al menú principal",
-        command=volver_menu,
-        font=("Arial", 14),
-        bg="white",
-        fg="black"
-    )
-    boton_volver.pack(side=tk.BOTTOM, pady=10)
-
-
-    label_reloj = tk.Label(
-        ventana_simulacion,
-        text="",
-        font=("Arial", 24, "bold"),
-        bg="#e8e8e8",
-        fg="#0066cc"
-    )
-    label_reloj.place(x=10, y=10)
-
-    label_trenes = tk.Label(
-        ventana_simulacion,
-        text="",
-        font=("Arial", 12),
-        bg="#e8e8e8",
-        fg="black",
-        justify=tk.LEFT
-    )
-    label_trenes.place(x=10, y=60)
-
-    pausa = False
-
-    def reanudar_tiempo():
-        nonlocal pausa
-        pausa = False
-        estado.segundos_desde_ultimo_evento = 0
-        estado.proximo_evento = random.randint(5, 15)
-
-    def generar_evento():
-        nonlocal pausa
-        pausa = True
-        evento = crear_evento_niebla(estado)
-        mostrar_evento_en_ventana(evento, estado, lambda: reanudar_tiempo())
-
-
-    def actualizar_tiempo():
-
-        if not pausa:
-            hora, fecha = estado.actualizar_display()
-            label_reloj.config(text=f"Hora: {hora}   Fecha: {fecha}")
-
-            status_text = "Estado Trenes (cargado):\n"
-            for t in estado.trenes:
-                current_speed = getattr(t, 'velocidad_actual', t.velocidad_max)
-                passengers = estado.pasajeros_a_bordo.get(t.nombre, 0)
-                status_text += f"{t.nombre}: {passengers} pasajeros, {current_speed} km/h\n"
-            label_trenes.config(text=status_text)
-
-            estado.avanzar_tiempo(segundos=1)
-            estado.segundos_desde_ultimo_evento += 1
-
-            if estado.segundos_desde_ultimo_evento >= estado.proximo_evento:
-                generar_evento()
-        ventana_simulacion.after(1000, actualizar_tiempo)
-
+        mostrar_evento_en_ventana(evento,estado, lambda:reanudar_tiempo())
+        
     actualizar_tiempo()
 

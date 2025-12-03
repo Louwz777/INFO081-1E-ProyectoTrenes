@@ -91,7 +91,8 @@ class EstadoSimulacion:
         """
         historial = {
             "eventos": self.historial_eventos,
-            "elecciones": self.historial_elecciones
+            "elecciones": self.historial_elecciones,
+            "semilla": self.semilla
         }
         with open(ruta_archivo, 'w') as archivo:
             json.dump(historial, archivo, indent=4)
